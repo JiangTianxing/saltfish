@@ -57,3 +57,4 @@ services:
     links:
       - discovery
       - config-server
+      - rabbitmq
