@@ -49,11 +49,11 @@ services:
       - hello-service
       - hello-service2
 
-#  config-client:
-#    image: saltfish/config-client
-#    ports:
-#      - "8083:8080"
-#    restart: always
-#    links:
-#      - discovery
-#      - config-server
+  config-client:
+    image: saltfish/config-client
+    ports:
+      - "8083:8080"
+    restart: always
+    links:
+      - discovery
+      - config-server
