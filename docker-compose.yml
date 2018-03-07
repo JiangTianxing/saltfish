@@ -1,0 +1,49 @@
+version: "3"
+services:
+  discovery:
+    image: saltfish/discovery
+    restart: always
+    ports:
+      - "8761:8080"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "15672:15672"
+
+  config-server:
+    image: saltfish/config-server
+    restart: always
+    links:
+      - discovery
+
+  hello-service:
+    image: saltfish/hello-service
+    ports:
+      - "8080:8080"
+    restart: always
+    links:
+      - discovery
+      - config-server
+
+  hello-service2:
+    image: saltfish/hello-service
+    ports:
+      - "8081:8080"
+    restart: always
+    links:
+      - discovery
+      - config-server
+
+  feign:
+    image: saltfish/feign
+    ports:
+      - "8082:8080"
+    restart: always
+    links:
+      - discovery
+      - config-server
+      - hello-service
+      - hello-service2
+

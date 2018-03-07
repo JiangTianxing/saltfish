@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: discovery
+eureka:
+  client:
+    fetch-registry: false
+    register-with-eureka: false
+  instance:
+    prefer-ip-address: false
+    hostname: discovery
