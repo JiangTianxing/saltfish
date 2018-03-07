@@ -5,10 +5,8 @@ spring:
     config:
       server:
         git:
-          uri: git@github.com:jx3536/saltfish
+          uri: https://github.com/jx3536/saltfish
           search-paths: config
-          clone-on-start: true
-          passphrase: jiangtianxing
 server:
   port: 8080
 eureka:
