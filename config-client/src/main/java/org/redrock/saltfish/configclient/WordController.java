@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WordController {
 
-    @Value("${word}")
+    @Value("${word:hhhh}")
     String word;
 
     @GetMapping("/word")

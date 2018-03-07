@@ -6,5 +6,6 @@ eureka:
     fetch-registry: false
     register-with-eureka: false
   instance:
-    prefer-ip-address: false
     hostname: discovery
+server:
+  port: 8761

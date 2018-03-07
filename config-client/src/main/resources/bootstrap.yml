@@ -5,7 +5,11 @@ spring:
     config:
       label: master
       profile: dev
-      uri: http://config-server:8080
+      uri: http://localhost:9000
+  rabbitmq:
+      host: localhost
+      port: 5672
+      username: guest
+      password: guest
 server:
   port: 8080
-word: hello
