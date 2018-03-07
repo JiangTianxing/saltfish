@@ -15,6 +15,8 @@ services:
   config-server:
     image: saltfish/config-server
     restart: always
+    ports:
+      - "9000:8080"
     links:
       - discovery
 
@@ -47,3 +49,11 @@ services:
       - hello-service
       - hello-service2
 
+#  config-client:
+#    image: saltfish/config-client
+#    ports:
+#      - "8083:8080"
+#    restart: always
+#    links:
+#      - discovery
+#      - config-server

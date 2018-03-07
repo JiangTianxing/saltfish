@@ -14,7 +14,7 @@ public class ConfigClientApplication {
 		SpringApplication.run(ConfigClientApplication.class, args);
 	}
 
-	@Value("word")
+	@Value("${word}")
 	String word;
 
 	@GetMapping("/word")
