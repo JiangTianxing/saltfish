@@ -8,4 +8,4 @@ eureka:
   instance:
     hostname: discovery
 server:
-  port: 8761
+  port: 8080

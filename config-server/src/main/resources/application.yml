@@ -8,11 +8,10 @@ spring:
           uri: https://github.com/jx3536/saltfish
           search-paths: config
 server:
-  port: 9000
+  port: 8080
 eureka:
   client:
     service-url:
-#      defaultZone: http://discovery:8080/eureka
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://discovery:8080/eureka
   instance:
     prefer-ip-address: false

@@ -29,6 +29,7 @@ services:
       - discovery
       - config-server
 
+
   hello-service2:
     image: saltfish/hello-service
     ports:
