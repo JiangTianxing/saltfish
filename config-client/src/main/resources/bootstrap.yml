@@ -5,13 +5,24 @@ spring:
     config:
       label: master
       profile: dev
-      uri: http://config-server:8080
       retry:
         max-attempts: 1200
+      uri: http://localhost:9000
+      fail-fast: true
+      allow-override: true
+#      discovery:
+#        service-id: config-server
+#        enabled: true
   rabbitmq:
-      host: rabbitmq
+      host: localhost
       port: 5672
       username: guest
       password: guest
 server:
-  port: 8080
+#  port: 8080
+  port: 8087
+eureka:
+  client:
+    service-url:
+#      defaultZone: http://discovery:8080/eureka
+      defaultZone: http://localhost:8761/eureka

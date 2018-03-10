@@ -11,6 +11,7 @@ services:
     restart: always
     ports:
       - "15672:15672"
+      - "5672:5672"
 
   config-server:
     image: saltfish/config-server
@@ -19,6 +20,7 @@ services:
       - "9000:8080"
     links:
       - discovery
+      - rabbitmq
 
   hello-service:
     image: saltfish/hello-service
@@ -54,4 +56,3 @@ services:
     restart: always
     links:
       - discovery
-      - config-server
