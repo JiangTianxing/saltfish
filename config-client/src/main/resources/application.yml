@@ -2,4 +2,9 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh
+        include: bus-refresh,refresh
+spring:
+  cloud:
+    bus:
+      trace:
+        enabled: true

@@ -7,4 +7,4 @@ docker rmi -f saltfish/$1:latest
 
 cd ./$1
 mvn clean
-mvn package docker:build
+mvn package docker:build -Dmaven.test.skip=true
