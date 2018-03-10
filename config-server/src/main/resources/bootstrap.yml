@@ -7,6 +7,11 @@ spring:
         git:
           uri: https://github.com/jx3536/saltfish
           search-paths: config
+          default-label: master
+        default-profile: dev
+      discovery:
+        service-id: config-server
+        enabled: true
 server:
   port: 8080
 eureka:
@@ -15,3 +20,4 @@ eureka:
       defaultZone: http://discovery:8080/eureka
   instance:
     prefer-ip-address: false
+
