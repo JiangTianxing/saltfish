@@ -29,7 +29,6 @@ services:
       - discovery
       - config-server
 
-
   hello-service2:
     image: saltfish/hello-service
     ports:
@@ -47,8 +46,6 @@ services:
     links:
       - discovery
       - config-server
-      - hello-service
-      - hello-service2
 
   config-client:
     image: saltfish/config-client
@@ -58,4 +55,3 @@ services:
     links:
       - discovery
       - config-server
-      - rabbitmq
