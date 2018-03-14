@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 @Configuration
-@RefreshScope
 public class DatasourceConfiguration {
     @Value("${spring.datasource.url}")
     private String url;
@@ -22,13 +21,12 @@ public class DatasourceConfiguration {
     private int initialSize;
     @Value("${spring.datasource.maxActive}")
     private int maxActive;
-    @Value("${spring.datasource.sinIdle}")
+    @Value("${spring.datasource.minIdle}")
     private int maxIdle;
     @Value("${spring.datasource.maxWait}")
     private int maxWait;
 
     @Bean
-    @RefreshScope
     public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl(url);
