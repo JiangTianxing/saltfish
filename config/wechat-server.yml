@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/wechat?useUnicode=true&characterEncoding=UTF-8&useTimezone=true&serverTimezone=PRC&useSSL=false
+    username: root
+    password:
+    initialize: true

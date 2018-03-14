@@ -9,9 +9,6 @@ spring:
           search-paths: config
           default-label: master
         default-profile: dev
-      discovery:
-        service-id: config-server
-        enabled: true
 server:
   port: 8080
 eureka:

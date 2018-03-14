@@ -1,6 +1,10 @@
 spring:
   application:
     name: discovery
+  security:
+    user:
+      name: jiangtianxing
+      password: jiangtianxing
 eureka:
   client:
     fetch-registry: false

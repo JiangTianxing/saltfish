@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: wechat-core
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+server:
+  port: 8080
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery:8080/eureka
