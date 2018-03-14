@@ -8,4 +8,4 @@ spring:
     maxActive: 20
     minIdle: 0
     maxWait: 60000
-word: hello world 水电费说的方式
+word: hello world
