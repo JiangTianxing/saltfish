@@ -8,4 +8,4 @@ spring:
     maxActive: 20
     minIdle: 0
     maxWait: 60000
-word: hello
+word: hello world
