@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: "jdbc:mysql://127.0.0.1:3306/wechat?useUnicode=true&characterEncoding=UTF-8&useTimezone=true&serverTimezone=PRC&useSSL=false"
+    url: "jdbc:mysql://127.0.0.1:3306/wechat2?useUnicode=true&characterEncoding=UTF-8&useTimezone=true&serverTimezone=PRC&useSSL=false"
     username: root
     password:
     initialSize: 2
@@ -9,3 +9,7 @@ spring:
     minIdle: 0
     maxWait: 60000
 word: hello world
+wechat:
+  appId: "wxdab44034ceb528e8"
+  appSecret: "ef79ebb78a637b1c36c10cd06e811d2c"
+  token: "woshijiangtianxing"
