@@ -6,14 +6,12 @@ import org.redrock.wechatcore.exception.WechatException;
 import org.redrock.wechatcore.repository.StringRepository;
 import org.redrock.wechatcore.repository.WechatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -42,20 +40,30 @@ public class WechatController {
      * @return
      * @throws WechatException
      */
-    @GetMapping("/tokenWithJwt/{code}")
+    @GetMapping("/token/{code}")
     public ResponseEntity<Map> getTokenWithJwt(@PathVariable("code") Optional<String> code) throws WechatException {
         if (!code.isPresent()) throw new WechatException(HttpStatus.BAD_REQUEST, "code 参数不可为空");
         Token userToken = wechatRepository.getUserAccessToken(code.get());
         UserInfo userInfo = wechatRepository.getUserInfo(userToken.getOpenid());
         String jwt = wechatRepository.createJwt(userInfo);
+        wechatRepository.saveJwtAndToken(jwt, userToken);
         Map<String, String> tokenWithJwt = new HashMap<>();
         tokenWithJwt.put("access_token", userToken.getAccessToken());
         tokenWithJwt.put("refresh_token", userToken.getRefreshToken());
         tokenWithJwt.put("expire_in", userToken.getExpiresIn() + "");
-        tokenWithJwt.put("jwt", jwt);
         return new ResponseEntity<>(tokenWithJwt, HttpStatus.OK);
     }
 
+    @PatchMapping("/token/{refresh_token}")
+    public ResponseEntity<Map> refreshTokenWithJwt(@PathVariable("refresh_token") Optional<String> refreshToken) throws WechatException {
+        if (!refreshToken.isPresent()) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 参数不可为空");
+        Token userToken = wechatRepository.updateUserAccessToken(refreshToken.get());
+        Map<String, String> tokenWithJwt = new HashMap<>();
+        tokenWithJwt.put("access_token", userToken.getAccessToken());
+        tokenWithJwt.put("refresh_token", userToken.getRefreshToken());
+        tokenWithJwt.put("expire_in", userToken.getExpiresIn() + "");
+        return new ResponseEntity<>(tokenWithJwt, HttpStatus.OK);
+    }
     /**
      * code 获取 测试接口
      * @param request
@@ -69,24 +77,13 @@ public class WechatController {
             return;
         }
         String apiUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
-        String api = String.format(apiUrl, "wxdab44034ceb528e8", "http://jiangtianixng.s1.natapp.link/core/test");
+        String api = String.format(apiUrl, "wxdab44034ceb528e8", "http://jiangtianixng.s1.natapp.link/test");
         response.sendRedirect(api);
         return;
     }
 
-    @GetMapping("/redis")
-    public String redis() {
-        redisTemplate.opsForValue().set("hello", "world");
-        return (String) redisTemplate.opsForValue().get("hello");
-    }
     @Autowired
     WechatRepository wechatRepository;
     @Autowired
     StringRepository stringRepository;
-
-    @Autowired
-    RedisTemplate redisTemplate;
-
-    @Autowired
-    StringRedisTemplate stringRedisTemplate;
 }

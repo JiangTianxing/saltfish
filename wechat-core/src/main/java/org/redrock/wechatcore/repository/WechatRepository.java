@@ -7,12 +7,14 @@ import org.redrock.wechatcore.config.ApiConfiguration;
 import org.redrock.wechatcore.exception.WechatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 public class WechatRepository {
@@ -23,6 +25,8 @@ public class WechatRepository {
     JdbcTemplate jdbcTemplate;
     @Autowired
     StringRepository stringRepository;
+    @Autowired
+    RedisTemplate<String, String> redisTemplate;
     @Value("${wechat.appId}")
     String appId;
     @Value("${wechat.appSecret}")
@@ -59,6 +63,36 @@ public class WechatRepository {
     }
 
     /**
+     * 考虑到可能后面会有多个服务实例，应该使用分布式锁
+     * @param refreshToken
+     * @return
+     * @throws WechatException
+     */
+    public Token updateUserAccessToken(String refreshToken) throws WechatException {
+//        // 判断refresh_token 是否过期
+//        String accessToken = redisTemplate.opsForValue().get("refresh_token:" + refreshToken);
+//        if (stringRepository.isBlank(accessToken)) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
+//        // 刷新token
+//        String api = String.format(ApiConfiguration.RefreshUserAccessTokenApi, appId, refreshToken);
+//        Token token = restTemplate.getForObject(api, Token.class);
+//        if (token == null || !token.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
+//        // 存储jwt，完成更新
+//        String jwt = redisTemplate.opsForValue().get("access_token:" + token.getAccessToken());
+//        if (stringRepository.isBlank(jwt)) {
+//            UserInfo userInfo = getUserInfo(token.getOpenid());
+//            jwt = createJwt(userInfo);
+//        }
+//        redisTemplate.opsForValue().set("access_token:" + token.getAccessToken(), jwt, 2, TimeUnit.HOURS);
+//        redisTemplate.opsForValue()
+//        return token;
+        //判断 refresh_token 是否过期
+        //刷新 access_token
+        //更新 token
+        redisTemplate.setEnableTransactionSupport(true);
+        redisTemplate.setEnableTransactionSupport(false);
+    }
+
+    /**
      * 获取用户身份信息
      * @param openid
      * @return
@@ -85,6 +119,16 @@ public class WechatRepository {
         String payload = stringRepository.getBase64Str(gson.toJson(userInfo));
         String signature = stringRepository.getSHA256Str(headerStr + "." + payload + secret);
         return headerStr + "." + payload + "." + signature;
+    }
+
+    /**
+     * 将相关信息存入session
+     * @param jwt
+     * @param token
+     */
+    public void saveJwtAndToken(String jwt, Token token) {
+        redisTemplate.opsForValue().set("access_token:" + token.getAccessToken(), jwt,  2, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set("refresh_token:" + token.getRefreshToken(), token.getAccessToken(), 20, TimeUnit.DAYS);
     }
 
     /**

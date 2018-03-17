@@ -1,5 +1,6 @@
 package org.redrock.wechatcore;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,11 @@ public class WechatCoreApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		redisTemplate.opsForValue().set("hello", "world");
-		redisTemplate.opsForValue().get("hello");
+		String key = "hello";
+		String value = "world";
+		redisTemplate.opsForValue().set(key, value);
+		System.out.println();
+		Assert.assertTrue(redisTemplate.opsForValue().get(key).equalsIgnoreCase(value));
 	}
 
 }
