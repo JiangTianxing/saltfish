@@ -6,6 +6,8 @@ import org.redrock.wechatcore.exception.WechatException;
 import org.redrock.wechatcore.repository.StringRepository;
 import org.redrock.wechatcore.repository.WechatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,8 +74,19 @@ public class WechatController {
         return;
     }
 
+    @GetMapping("/redis")
+    public String redis() {
+        redisTemplate.opsForValue().set("hello", "world");
+        return (String) redisTemplate.opsForValue().get("hello");
+    }
     @Autowired
     WechatRepository wechatRepository;
     @Autowired
     StringRepository stringRepository;
+
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
 }

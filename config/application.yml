@@ -5,7 +5,6 @@ spring:
     host: localhost
     password:
     port: 6379
-    timeout: 0
     jedis:
       pool:
         max-active: 8
