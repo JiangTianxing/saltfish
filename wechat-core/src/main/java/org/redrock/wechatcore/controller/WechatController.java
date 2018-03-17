@@ -8,10 +8,8 @@ import org.redrock.wechatcore.repository.WechatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -59,7 +57,6 @@ public class WechatController {
         Token userToken = wechatRepository.updateUserAccessToken(refreshToken.get());
         Map<String, String> tokenWithJwt = new HashMap<>();
         tokenWithJwt.put("access_token", userToken.getAccessToken());
-        tokenWithJwt.put("refresh_token", userToken.getRefreshToken());
         tokenWithJwt.put("expire_in", userToken.getExpiresIn() + "");
         return new ResponseEntity<>(tokenWithJwt, HttpStatus.OK);
     }
@@ -80,6 +77,11 @@ public class WechatController {
         String api = String.format(apiUrl, "wxdab44034ceb528e8", "http://jiangtianixng.s1.natapp.link/test");
         response.sendRedirect(api);
         return;
+    }
+
+    @GetMapping("/jwt")
+    public String jwt(@RequestHeader("Authentication") String authentication) {
+        return authentication;
     }
 
     @Autowired
