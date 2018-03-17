@@ -1,6 +1,6 @@
 # api 服务网关路由配置
 zuul:
   routes:
-    wechat-core-token:
+    wechat:
       path: /wechat/**
       serviceId: wechat-core
