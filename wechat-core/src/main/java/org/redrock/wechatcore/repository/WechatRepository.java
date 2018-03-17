@@ -3,6 +3,7 @@ package org.redrock.wechatcore.repository;
 import com.google.gson.Gson;
 import org.redrock.wechatcore.bean.Token;
 import org.redrock.wechatcore.bean.UserInfo;
+import org.redrock.wechatcore.component.RedisLock;
 import org.redrock.wechatcore.component.StringUtil;
 import org.redrock.wechatcore.config.Api;
 import org.redrock.wechatcore.exception.WechatException;
@@ -19,21 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 @Repository
 public class WechatRepository {
-
-    @Autowired
-    RestTemplate restTemplate;
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-    @Autowired
-    StringUtil stringUtil;
-    @Autowired
-    RedisTemplate<String, String> redisTemplate;
-    @Value("${wechat.appId}")
-    String appId;
-    @Value("${wechat.appSecret}")
-    String appSecret;
-    @Value("${core.secret}")
-    String secret;
 
     /**
      * 获取微信重要权限调用凭证access_token
@@ -60,7 +46,6 @@ public class WechatRepository {
         Token token = restTemplate.getForObject(api, Token.class);
         if (token == null || !token.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "code 无效");
         return token;
-
     }
 
     /**
@@ -70,28 +55,37 @@ public class WechatRepository {
      * @throws WechatException
      */
     public Token updateUserAccessToken(String refreshToken) throws WechatException {
-//        // 判断refresh_token 是否过期
-//        String accessToken = redisTemplate.opsForValue().get("refresh_token:" + refreshToken);
-//        if (stringUtil.isBlank(accessToken)) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
-//        // 刷新token
-//        String api = String.format(Api.RefreshUserAccessTokenApi, appId, refreshToken);
-//        Token token = restTemplate.getForObject(api, Token.class);
-//        if (token == null || !token.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
-//        // 存储jwt，完成更新
-//        String jwt = redisTemplate.opsForValue().get("access_token:" + token.getAccessToken());
-//        if (stringUtil.isBlank(jwt)) {
-//            UserInfo userInfo = getUserInfo(token.getOpenid());
-//            jwt = createJwt(userInfo);
-//        }
-//        redisTemplate.opsForValue().set("access_token:" + token.getAccessToken(), jwt, 2, TimeUnit.HOURS);
-//        redisTemplate.opsForValue()
-//        return token;
-        //判断 refresh_token 是否过期
-        //刷新 access_token
-        //更新 token
-        redisTemplate.setEnableTransactionSupport(true);
-        redisTemplate.setEnableTransactionSupport(false);
-        return null;
+        Token token = null;
+        String jwtAndTokenKey = "refresh_token:" + refreshToken;
+        if (!redisTemplate.hasKey(jwtAndTokenKey)) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
+        String oldAccessToken = (String) redisTemplate.opsForHash().get(jwtAndTokenKey, "access_token");
+        String jwtKey = "access_token:" + oldAccessToken;
+        if (redisTemplate.hasKey(jwtKey)) {
+            long expireIn = redisTemplate.getExpire(jwtKey, TimeUnit.SECONDS);
+            if (expireIn > 5 * 60) {
+                token = new Token();
+                token.setExpiresIn(Integer.parseInt(String.valueOf(expireIn)));
+                token.setAccessToken(oldAccessToken);
+                token.setRefreshToken(refreshToken);
+                token.setScope("sni_base");
+                return token;
+            }
+            RedisLock redisLock = new RedisLock(redisTemplate, refreshToken);
+            redisLock.lock();
+                jwtKey = "access_token:" + redisTemplate.opsForHash().get(jwtAndTokenKey, "access_token");
+                if (!redisTemplate.hasKey(jwtKey) || redisTemplate.getExpire(jwtKey, TimeUnit.SECONDS) < 5 * 60) {
+                    String api = String.format(Api.RefreshUserAccessTokenApi, appId, refreshToken);
+                    token = restTemplate.getForObject(api, Token.class);
+                    if (token == null || !token.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
+                    redisTemplate.delete(jwtKey);
+                    String jwt = (String) redisTemplate.opsForHash().get(jwtAndTokenKey, "jwt");
+                    redisTemplate.opsForHash().put(jwtAndTokenKey, "access_token", token.getAccessToken());
+                    jwtKey = "access_token:" + token.getAccessToken();
+                    redisTemplate.opsForValue().set(jwtKey, jwt, 2, TimeUnit.HOURS);
+                }
+            redisLock.unlock();
+        }
+        return token;
     }
 
     /**
@@ -130,7 +124,10 @@ public class WechatRepository {
      */
     public void saveJwtAndToken(String jwt, Token token) {
         redisTemplate.opsForValue().set("access_token:" + token.getAccessToken(), jwt,  2, TimeUnit.HOURS);
-        redisTemplate.opsForValue().set("refresh_token:" + token.getRefreshToken(), token.getAccessToken(), 20, TimeUnit.DAYS);
+        String key = "refresh_token:" + token.getRefreshToken();
+        redisTemplate.opsForHash().put(key, "access_token", token.getAccessToken());
+        redisTemplate.opsForHash().put(key, "jwt", jwt);
+        redisTemplate.expire(key, 15, TimeUnit.DAYS);
     }
 
     /**
@@ -148,4 +145,19 @@ public class WechatRepository {
         }
         return false;
     }
+
+    @Autowired
+    RestTemplate restTemplate;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+    @Autowired
+    StringUtil stringUtil;
+    @Autowired
+    RedisTemplate<String, String> redisTemplate;
+    @Value("${wechat.appId}")
+    String appId;
+    @Value("${wechat.appSecret}")
+    String appSecret;
+    @Value("${core.secret}")
+    String secret;
 }

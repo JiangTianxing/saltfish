@@ -22,7 +22,6 @@ import java.util.Optional;
 @RestController
 public class WechatController {
 
-
     /**
      * 获取微信权限accessToken
      * @return

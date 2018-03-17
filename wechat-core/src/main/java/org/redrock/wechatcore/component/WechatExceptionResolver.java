@@ -32,8 +32,10 @@ public class WechatExceptionResolver implements HandlerExceptionResolver{
             Map<String, String> result = new HashMap<>();
             result.put("errmsg", ex.getMessage());
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            ex.printStackTrace();
             if(ex instanceof WechatException){
                 wechatException = (WechatException) ex;
+                ex.printStackTrace();
                 result.put("errmsg", wechatException.getMsg());
                 response.setStatus(wechatException.getHttpStatus().value());
             }

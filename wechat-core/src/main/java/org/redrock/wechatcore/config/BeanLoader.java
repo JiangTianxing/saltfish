@@ -46,7 +46,7 @@ public class BeanLoader {
      * 配置数据源
      */
     @Bean
-    public DataSource dataSource(
+    public BasicDataSource dataSource(
             @Value("${spring.datasource.url}") String url,
             @Value("${spring.datasource.username}") String username,
             @Value("${spring.datasource.password}") String password,
