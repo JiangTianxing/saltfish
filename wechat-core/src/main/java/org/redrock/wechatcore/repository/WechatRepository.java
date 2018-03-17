@@ -60,8 +60,10 @@ public class WechatRepository {
         if (!redisTemplate.hasKey(refreshTokenKey)) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
         String oldAccessToken = (String) redisTemplate.opsForHash().get(refreshTokenKey, "access_token");
         String accessTokenKey = "access_token:" + oldAccessToken;
+        System.out.println(accessTokenKey);
         if (redisTemplate.hasKey(accessTokenKey)) {
             long expireIn = redisTemplate.getExpire(accessTokenKey, TimeUnit.SECONDS);
+            System.out.println("expire time is " + expireIn);
             if (expireIn > 5 * 60) {
                 token = new Token();
                 token.setAccessToken(oldAccessToken);
@@ -87,7 +89,7 @@ public class WechatRepository {
                 redisLock.unlock();
                 throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
             }
-            redisTemplate.opsForHash().put(refreshTokenKey, "access_token", refreshToken);
+            redisTemplate.opsForHash().put(refreshTokenKey, "access_token", token.getAccessToken());
             redisTemplate.delete(accessTokenKey);
             accessTokenKey = "access_token:" + token.getAccessToken();
             redisTemplate.opsForValue().set(accessTokenKey, jwt, 2, TimeUnit.HOURS);
