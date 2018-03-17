@@ -4,7 +4,6 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import org.springframework.http.HttpStatus;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,20 +28,21 @@ public class AuthHeaderFilter extends ZuulFilter {
 
     @Override
     public Object run() throws ZuulException {
-        try {
-            RequestContext requestContext = RequestContext.getCurrentContext();
-            HttpServletRequest request = requestContext.getRequest();
-            HttpServletResponse response = requestContext.getResponse();
-            String userAccessToken = requestContext.getRequest().getHeader("Authorization");
-            if (null == userAccessToken || "".equalsIgnoreCase(userAccessToken.trim())) {
-                Map<String, String> msg = new HashMap<>();
-                msg.put("errmsg", "没有用户权限");
-                response.setStatus(HttpStatus.BAD_REQUEST.value());
-                response.getWriter().write(msg.toString());
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            RequestContext requestContext = RequestContext.getCurrentContext();
+//            HttpServletRequest request = requestContext.getRequest();
+//            HttpServletResponse response = requestContext.getResponse();
+//            String userAccessToken = requestContext.getRequest().getHeader("Authorization");
+//            if (null == userAccessToken || "".equalsIgnoreCase(userAccessToken.trim())) {
+//                Map<String, String> msg = new HashMap<>();
+//                msg.put("errmsg", "没有用户权限");
+//                response.setStatus(HttpStatus.BAD_REQUEST.value());
+//                response.getWriter().write(msg.toString());
+//
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        return null;
     }
 }

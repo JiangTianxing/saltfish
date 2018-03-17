@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 全局的WechatException 消息处理器
+ */
 public class WechatExceptionResolver implements HandlerExceptionResolver{
     @Nullable
     @Override

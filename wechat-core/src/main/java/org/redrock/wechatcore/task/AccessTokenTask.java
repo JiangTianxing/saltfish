@@ -16,26 +16,11 @@ import java.util.Map;
 import static org.redrock.wechatcore.config.ApiConfiguration.*;
 
 @Component
-public class AccessTokenTasks {
+public class AccessTokenTask {
 
-    @Value("${wechat.appId}")
-    private String appId;
-    @Value("${wechat.appSecret}")
-    private String appSecret;
-    @Value("${wechat.token}")
-    private String token;
-
-    @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
-    private StringRepository stringUtil;
-    @Autowired
-    private TimeRepository timeUtil;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private WechatRepository wechatRepository;
-
+    /**
+     * 一小时 和 每次重启服务时 自动刷新一次access_token
+     */
     @Scheduled(fixedRate = 1000 * 60 * 60)
     public void refreshAccessToken() {
         String url = String.format(AccessTokenApi, appId, appSecret);
@@ -64,4 +49,23 @@ public class AccessTokenTasks {
             }
         }
     }
+
+    @Value("${wechat.appId}")
+    private String appId;
+    @Value("${wechat.appSecret}")
+    private String appSecret;
+    @Value("${wechat.token}")
+    private String token;
+
+    @Autowired
+    private RestTemplate restTemplate;
+    @Autowired
+    private StringRepository stringUtil;
+    @Autowired
+    private TimeRepository timeUtil;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private WechatRepository wechatRepository;
+
 }

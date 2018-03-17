@@ -1,5 +1,6 @@
+# api 服务网关路由配置
 zuul:
   routes:
-    wechat-core:
-      path: /wechat/core/**
-      serviceId: wechat-core
+    wechat-core-token:
+      path: /wechat/token/**
+      url: http://localhost:8080/token/**

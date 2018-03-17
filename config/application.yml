@@ -1,14 +1,30 @@
 spring:
+# 缓存配置
+  redis:
+    database: 0
+    host: localhost
+    password:
+    port: 6379
+    timeout: 0
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+# rabbitmq消息中间件配置
   rabbitmq:
 #    host: rabbitmp
     host: localhost
     port: 5672
     username: guest
     password: guest
+# 为每个微服务暴露 bus-refresh、refresh 两个api接口，方便部分配置信息的动态刷新
 management:
   endpoints:
     web:
       exposure:
         include: bus-refresh,refresh
+# 微服务内部调用权限 jwt 的加密私钥
 core:
   secret: "redrockstaff"
