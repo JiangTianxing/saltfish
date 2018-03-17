@@ -1,0 +1,5 @@
+zuul:
+  routes:
+    wechat-core:
+      path: /wechat/core/**
+      serviceId: wechat-core

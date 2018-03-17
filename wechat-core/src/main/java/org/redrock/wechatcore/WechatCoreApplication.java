@@ -19,14 +19,4 @@ public class WechatCoreApplication {
 		SpringApplication.run(WechatCoreApplication.class, args);
 	}
 
-	/**
-	 * 开启内存泄漏监听器
-	 * @return
-	 */
-	@Bean
-	public ServletListenerRegistrationBean servletListenerRegistrationBean(){
-		ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
-		servletListenerRegistrationBean.setListener(new ClassLoaderLeakPreventor());
-		return servletListenerRegistrationBean;
-	}
 }

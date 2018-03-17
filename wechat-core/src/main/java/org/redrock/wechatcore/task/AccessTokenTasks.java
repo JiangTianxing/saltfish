@@ -55,7 +55,7 @@ public class AccessTokenTasks {
                 );
             } else {
                 jdbcTemplate.update(
-                        "update core set accessToke  = ? where appId = ?",
+                        "update core set accessToken = ? where appId = ?",
                         preparedStatement -> {
                             preparedStatement.setString(1, accessToken);
                             preparedStatement.setString(2, appId);

@@ -13,3 +13,4 @@ wechat:
   appId: "wxdab44034ceb528e8"
   appSecret: "ef79ebb78a637b1c36c10cd06e811d2c"
   token: "woshijiangtianxing"
+  index: "http://jiangtianixng.s1.natapp.link/core/auth"
