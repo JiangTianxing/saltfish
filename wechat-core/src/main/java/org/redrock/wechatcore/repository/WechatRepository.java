@@ -3,7 +3,8 @@ package org.redrock.wechatcore.repository;
 import com.google.gson.Gson;
 import org.redrock.wechatcore.bean.Token;
 import org.redrock.wechatcore.bean.UserInfo;
-import org.redrock.wechatcore.config.ApiConfiguration;
+import org.redrock.wechatcore.component.StringUtil;
+import org.redrock.wechatcore.config.Api;
 import org.redrock.wechatcore.exception.WechatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +25,7 @@ public class WechatRepository {
     @Autowired
     JdbcTemplate jdbcTemplate;
     @Autowired
-    StringRepository stringRepository;
+    StringUtil stringUtil;
     @Autowired
     RedisTemplate<String, String> redisTemplate;
     @Value("${wechat.appId}")
@@ -55,7 +56,7 @@ public class WechatRepository {
      * @return
      */
     public Token getUserAccessToken(String code) throws WechatException {
-        String api = String.format(ApiConfiguration.UserAccessTokenApi, appId, appSecret, code);
+        String api = String.format(Api.UserAccessTokenApi, appId, appSecret, code);
         Token token = restTemplate.getForObject(api, Token.class);
         if (token == null || !token.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "code 无效");
         return token;
@@ -71,14 +72,14 @@ public class WechatRepository {
     public Token updateUserAccessToken(String refreshToken) throws WechatException {
 //        // 判断refresh_token 是否过期
 //        String accessToken = redisTemplate.opsForValue().get("refresh_token:" + refreshToken);
-//        if (stringRepository.isBlank(accessToken)) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
+//        if (stringUtil.isBlank(accessToken)) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
 //        // 刷新token
-//        String api = String.format(ApiConfiguration.RefreshUserAccessTokenApi, appId, refreshToken);
+//        String api = String.format(Api.RefreshUserAccessTokenApi, appId, refreshToken);
 //        Token token = restTemplate.getForObject(api, Token.class);
 //        if (token == null || !token.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
 //        // 存储jwt，完成更新
 //        String jwt = redisTemplate.opsForValue().get("access_token:" + token.getAccessToken());
-//        if (stringRepository.isBlank(jwt)) {
+//        if (stringUtil.isBlank(jwt)) {
 //            UserInfo userInfo = getUserInfo(token.getOpenid());
 //            jwt = createJwt(userInfo);
 //        }
@@ -90,6 +91,7 @@ public class WechatRepository {
         //更新 token
         redisTemplate.setEnableTransactionSupport(true);
         redisTemplate.setEnableTransactionSupport(false);
+        return null;
     }
 
     /**
@@ -99,7 +101,7 @@ public class WechatRepository {
      */
     public UserInfo getUserInfo(String openid) throws WechatException {
         String accessToken = getAccessToken();
-        String api = String.format(ApiConfiguration.UserInfoApi, accessToken, openid);
+        String api = String.format(Api.UserInfoApi, accessToken, openid);
         UserInfo userInfo = restTemplate.getForObject(api, UserInfo.class);
         if (userInfo == null || !userInfo.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "openid 错误");
         return userInfo;
@@ -115,9 +117,9 @@ public class WechatRepository {
         Map<String, String> header = new HashMap<>();
         header.put("alg", "256");
         header.put("typ", "jwt");
-        String headerStr = stringRepository.getBase64Str(gson.toJson(header));
-        String payload = stringRepository.getBase64Str(gson.toJson(userInfo));
-        String signature = stringRepository.getSHA256Str(headerStr + "." + payload + secret);
+        String headerStr = stringUtil.getBase64Str(gson.toJson(header));
+        String payload = stringUtil.getBase64Str(gson.toJson(userInfo));
+        String signature = stringUtil.getSHA256Str(headerStr + "." + payload + secret);
         return headerStr + "." + payload + "." + signature;
     }
 
@@ -137,10 +139,10 @@ public class WechatRepository {
      * @return
      */
     public boolean checkJwt(String jwt) {
-        if (!stringRepository.isBlank(jwt)) {
+        if (!stringUtil.isBlank(jwt)) {
             String[] items = jwt.split("\\.");
             if (items.length == 3) {
-                String signature = stringRepository.getSHA256Str(items[0] + "." + items[1] + secret);
+                String signature = stringUtil.getSHA256Str(items[0] + "." + items[1] + secret);
                 if (signature.equalsIgnoreCase(items[3])) return true;
             }
         }

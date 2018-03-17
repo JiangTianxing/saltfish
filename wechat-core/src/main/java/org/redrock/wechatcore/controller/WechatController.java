@@ -3,7 +3,7 @@ package org.redrock.wechatcore.controller;
 import org.redrock.wechatcore.bean.Token;
 import org.redrock.wechatcore.bean.UserInfo;
 import org.redrock.wechatcore.exception.WechatException;
-import org.redrock.wechatcore.repository.StringRepository;
+import org.redrock.wechatcore.component.StringUtil;
 import org.redrock.wechatcore.repository.WechatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,6 +64,7 @@ public class WechatController {
         tokenWithJwt.put("expire_in", userToken.getExpiresIn() + "");
         return new ResponseEntity<>(tokenWithJwt, HttpStatus.OK);
     }
+
     /**
      * code 获取 测试接口
      * @param request
@@ -85,5 +86,5 @@ public class WechatController {
     @Autowired
     WechatRepository wechatRepository;
     @Autowired
-    StringRepository stringRepository;
+    StringUtil stringRepository;
 }

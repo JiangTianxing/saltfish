@@ -1,7 +1,5 @@
-package org.redrock.wechatcore.task;
+package org.redrock.wechatcore.component;
 
-import org.redrock.wechatcore.repository.StringRepository;
-import org.redrock.wechatcore.repository.TimeRepository;
 import org.redrock.wechatcore.repository.WechatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,16 +7,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.redrock.wechatcore.config.ApiConfiguration.*;
+import static org.redrock.wechatcore.config.Api.*;
 
 @Component
 public class AccessTokenTask {
 
     /**
+     * 必须加分布式锁进行刷新
      * 一小时 和 每次重启服务时 自动刷新一次access_token
      */
     @Scheduled(fixedRate = 1000 * 60 * 60)
@@ -60,9 +57,9 @@ public class AccessTokenTask {
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
-    private StringRepository stringUtil;
+    private StringUtil stringUtil;
     @Autowired
-    private TimeRepository timeUtil;
+    private TimeUtil timeUtil;
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
