@@ -80,6 +80,11 @@ public class WechatController {
 
     @GetMapping("/jwt")
     public String jwt(@RequestHeader("Authentication") String authentication) {
+        String[] items = authentication.split("\\.");
+        if (items != null && items.length == 3) {
+            String data = stringRepository.base64Decode(items[1]);
+            return data;
+        }
         return authentication;
     }
 

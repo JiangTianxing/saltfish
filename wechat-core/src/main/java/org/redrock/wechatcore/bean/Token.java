@@ -11,7 +11,7 @@ public class Token extends WechatError{
     String accessToken;
 
     @JsonAlias("expires_in")
-    int expiresIn;
+    long expiresIn;
 
     @JsonAlias("refresh_token")
     String refreshToken;

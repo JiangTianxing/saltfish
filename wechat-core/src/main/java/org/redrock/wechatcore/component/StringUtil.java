@@ -28,7 +28,11 @@ public class StringUtil {
         return encodeStr;
     }
 
-    public String getBase64Str(String str) {
+    public String base64Encode(String str) {
         return Base64.encodeBase64String(str.getBytes());
+    }
+
+    public String base64Decode(String str) {
+        return new String(Base64.decodeBase64(str));
     }
 }

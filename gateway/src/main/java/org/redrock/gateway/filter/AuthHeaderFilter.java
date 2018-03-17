@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,13 +34,15 @@ public class AuthHeaderFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
-        return false;
+        return true;
     }
 
     @Override
     public Object run() throws ZuulException {
         RequestContext requestContext = RequestContext.getCurrentContext();
         HttpServletRequest request = requestContext.getRequest();
+        HttpServletResponse response = requestContext.getResponse();
+        response.setCharacterEncoding("UTF-8");
         String accessToken = request.getHeader("Authentication");
         Gson gson = new Gson();
         Map<String, String> errors = new HashMap<>();

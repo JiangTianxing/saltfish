@@ -55,36 +55,43 @@ public class WechatRepository {
      * @throws WechatException
      */
     public Token updateUserAccessToken(String refreshToken) throws WechatException {
-        Token token = null;
-        String jwtAndTokenKey = "refresh_token:" + refreshToken;
-        if (!redisTemplate.hasKey(jwtAndTokenKey)) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
-        String oldAccessToken = (String) redisTemplate.opsForHash().get(jwtAndTokenKey, "access_token");
-        String jwtKey = "access_token:" + oldAccessToken;
-        if (redisTemplate.hasKey(jwtKey)) {
-            long expireIn = redisTemplate.getExpire(jwtKey, TimeUnit.SECONDS);
+        Token token;
+        String refreshTokenKey = "refresh_token:" + refreshToken;
+        if (!redisTemplate.hasKey(refreshTokenKey)) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
+        String oldAccessToken = (String) redisTemplate.opsForHash().get(refreshTokenKey, "access_token");
+        String accessTokenKey = "access_token:" + oldAccessToken;
+        if (redisTemplate.hasKey(accessTokenKey)) {
+            long expireIn = redisTemplate.getExpire(accessTokenKey, TimeUnit.SECONDS);
             if (expireIn > 5 * 60) {
                 token = new Token();
-                token.setExpiresIn(Integer.parseInt(String.valueOf(expireIn)));
                 token.setAccessToken(oldAccessToken);
-                token.setRefreshToken(refreshToken);
-                token.setScope("sni_base");
+                token.setExpiresIn(expireIn);
                 return token;
             }
-            RedisLock redisLock = new RedisLock(redisTemplate, refreshToken);
-            redisLock.lock();
-                jwtKey = "access_token:" + redisTemplate.opsForHash().get(jwtAndTokenKey, "access_token");
-                if (!redisTemplate.hasKey(jwtKey) || redisTemplate.getExpire(jwtKey, TimeUnit.SECONDS) < 5 * 60) {
-                    String api = String.format(Api.RefreshUserAccessTokenApi, appId, refreshToken);
-                    token = restTemplate.getForObject(api, Token.class);
-                    if (token == null || !token.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
-                    redisTemplate.delete(jwtKey);
-                    String jwt = (String) redisTemplate.opsForHash().get(jwtAndTokenKey, "jwt");
-                    redisTemplate.opsForHash().put(jwtAndTokenKey, "access_token", token.getAccessToken());
-                    jwtKey = "access_token:" + token.getAccessToken();
-                    redisTemplate.opsForValue().set(jwtKey, jwt, 2, TimeUnit.HOURS);
-                }
-            redisLock.unlock();
         }
+        String jwt = (String) redisTemplate.opsForHash().get(refreshTokenKey, "jwt");
+        RedisLock redisLock = new RedisLock(redisTemplate, refreshToken);
+        redisLock.lock();
+            accessTokenKey = "access_token:" + redisTemplate.opsForHash().get(refreshTokenKey, "access_token");
+            long expireIn;
+            if (redisTemplate.hasKey(accessTokenKey) && (expireIn = redisTemplate.getExpire(accessTokenKey, TimeUnit.SECONDS)) > 5 * 60) {
+                token = new Token();
+                token.setAccessToken(oldAccessToken);
+                token.setExpiresIn(expireIn);
+                redisLock.unlock();
+                return token;
+            }
+            String api = String.format(Api.RefreshUserAccessTokenApi, appId, refreshToken);
+            token = restTemplate.getForObject(api, Token.class);
+            if (token == null || !token.valid()) {
+                redisLock.unlock();
+                throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
+            }
+            redisTemplate.opsForHash().put(refreshTokenKey, "access_token", refreshToken);
+            redisTemplate.delete(accessTokenKey);
+            accessTokenKey = "access_token:" + token.getAccessToken();
+            redisTemplate.opsForValue().set(accessTokenKey, jwt, 2, TimeUnit.HOURS);
+        redisLock.unlock();
         return token;
     }
 
@@ -111,23 +118,40 @@ public class WechatRepository {
         Map<String, String> header = new HashMap<>();
         header.put("alg", "256");
         header.put("typ", "jwt");
-        String headerStr = stringUtil.getBase64Str(gson.toJson(header));
-        String payload = stringUtil.getBase64Str(gson.toJson(userInfo));
+        String headerStr = stringUtil.base64Encode(gson.toJson(header));
+        String payload = stringUtil.base64Encode(gson.toJson(userInfo));
         String signature = stringUtil.getSHA256Str(headerStr + "." + payload + secret);
         return headerStr + "." + payload + "." + signature;
     }
 
     /**
-     * 将相关信息存入session
+     * 将相关信息存入session，同时删除无用的 refresh_token 与 access_token
      * @param jwt
      * @param token
      */
     public void saveJwtAndToken(String jwt, Token token) {
-        redisTemplate.opsForValue().set("access_token:" + token.getAccessToken(), jwt,  2, TimeUnit.HOURS);
-        String key = "refresh_token:" + token.getRefreshToken();
-        redisTemplate.opsForHash().put(key, "access_token", token.getAccessToken());
-        redisTemplate.opsForHash().put(key, "jwt", jwt);
-        redisTemplate.expire(key, 15, TimeUnit.DAYS);
+        // 通过openid 删除之前所有的权限数据
+        String openidKey = "openid:" + token.getOpenid();
+        if (redisTemplate.hasKey(openidKey)) {
+            String oldRefreshToken = redisTemplate.opsForValue().get(openidKey);
+            String refreshTokenKey = "refresh_token:" + oldRefreshToken;
+            if (redisTemplate.hasKey(refreshTokenKey)) {
+                String oldAccessToken = (String) redisTemplate.opsForHash().get(refreshTokenKey, "access_token");
+                String accessTokenKey = "access_token:" + oldAccessToken;
+                redisTemplate.delete(accessTokenKey);
+            }
+            redisTemplate.delete(refreshTokenKey);
+        }
+        //重新设置 openidKey的键值
+        redisTemplate.opsForValue().set(openidKey, token.getRefreshToken(), 20, TimeUnit.DAYS);
+        //重新设置 refreshTokenKey的键值
+        String refreshTokenKey = "refresh_token:" + token.getRefreshToken();
+        redisTemplate.opsForHash().put(refreshTokenKey, "access_token", token.getAccessToken());
+        redisTemplate.opsForHash().put(refreshTokenKey, "jwt", jwt);
+        redisTemplate.expire(refreshTokenKey, 15, TimeUnit.DAYS);
+        //重新设置 accessTokenKey的键值
+        String accessTokenKey = "access_token:" + getAccessToken();
+        redisTemplate.opsForValue().set(accessTokenKey, jwt, 2, TimeUnit.HOURS);
     }
 
     /**
