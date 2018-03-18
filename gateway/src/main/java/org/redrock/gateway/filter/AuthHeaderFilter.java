@@ -40,7 +40,7 @@ public class AuthHeaderFilter extends ZuulFilter {
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
-        String authentication = request.getHeader("Authentication");
+        String authentication = request.getHeader("Authorization");
         if (stringUtil.isBlank(authentication)) return null;
         authentication = authentication.trim();
         if (!authentication.startsWith("Bearer ")) return null;
@@ -55,7 +55,7 @@ public class AuthHeaderFilter extends ZuulFilter {
             context.setResponseBody(msg);
             return null;
         }
-        context.addZuulRequestHeader("Authentication", "jwt " + jwt);
+        context.addZuulRequestHeader("Authorization", "jwt " + jwt);
         return null;
     }
 }

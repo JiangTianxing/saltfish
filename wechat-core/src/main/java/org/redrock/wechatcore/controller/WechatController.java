@@ -83,8 +83,8 @@ public class WechatController {
 
     @Wechat(JwtAuth.class)
     @GetMapping("/jwt")
-    public String jwt(UserInfo userInfo) {
-        return userInfo.getHeadimgurl();
+    public UserInfo jwt(UserInfo userInfo) {
+        return userInfo;
     }
 
     @Autowired

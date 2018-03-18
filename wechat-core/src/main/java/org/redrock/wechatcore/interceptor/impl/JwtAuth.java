@@ -18,14 +18,14 @@ public class JwtAuth implements BaseInterceptor {
 
     @Override
     public boolean interceptor(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object handler) throws Exception {
-        String authentication = httpServletRequest.getHeader("Authentication");
+        String authentication = httpServletRequest.getHeader("Authorization");
         if (!stringUtil.isBlank(authentication)) {
             authentication = authentication.trim();
             if (authentication.startsWith("jwt")) {
                 String jwt = authentication.substring(authentication.indexOf(" ") + 1);
                 String[] items = jwt.split("\\.");
                 if (items != null && items.length == 3) {
-                    String userInfoJson = items[1];
+                    String userInfoJson = stringUtil.base64Decode(items[1]);
                     UserInfo userInfo = new Gson().fromJson(userInfoJson, UserInfo.class);
                     if (userInfo != null && userInfo.valid()) {
                         httpServletRequest.setAttribute(UserInfoPath, userInfo);
