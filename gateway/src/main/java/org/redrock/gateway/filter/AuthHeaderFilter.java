@@ -19,8 +19,6 @@ public class AuthHeaderFilter extends ZuulFilter {
     RedisTemplate<String, String> redisTemplate;
     @Autowired
     StringUtil stringUtil;
-    @Autowired
-    List<String> data;
 
     @Override
     public String filterType() {
@@ -35,7 +33,6 @@ public class AuthHeaderFilter extends ZuulFilter {
     @Override
     public boolean shouldFilter() {
         return true;
-
     }
 
     @Override

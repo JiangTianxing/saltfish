@@ -1,7 +1,7 @@
 package org.redrock.wechatcore.interceptor;
 
-import org.redrock.wechatcore.interceptor.annotation.*;
 import org.redrock.wechatcore.exception.WechatException;
+import org.redrock.wechatcore.interceptor.annotation.Wechat;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -29,7 +29,7 @@ public class InitInterceptor implements HandlerInterceptor {
                         Method method = object.getClass().getMethod("interceptor", clazzes);
                         Object[] params = new Object[]{httpServletRequest, httpServletResponse, handler};
                         return (boolean) method.invoke(object, params);
-                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassCastException e) {
                         Throwable cause = e.getCause();
                         if(cause instanceof WechatException){
                             httpServletResponse.setContentType("application/json;charset=UTF-8");
