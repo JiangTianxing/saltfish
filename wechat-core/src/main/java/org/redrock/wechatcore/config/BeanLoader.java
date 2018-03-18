@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import se.jiderhamn.classloader.leak.prevention.ClassLoaderLeakPreventor;
-import javax.sql.DataSource;
 
 @Configuration
 public class BeanLoader {

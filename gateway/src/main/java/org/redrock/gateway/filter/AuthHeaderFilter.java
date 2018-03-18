@@ -34,6 +34,9 @@ public class AuthHeaderFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
+        RequestContext context = RequestContext.getCurrentContext();
+        String uri = context.getRequest().getRequestURI();
+        System.out.println(uri);
         return true;
     }
 

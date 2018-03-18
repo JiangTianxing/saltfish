@@ -1,9 +1,15 @@
 # api 服务网关路由配置
+#zuul:
+#  routes:
+#    wechat:
+#      path: /wechat/**
+#      serviceId: wechat-core
 zuul:
   routes:
     wechat:
       path: /wechat/**
-      serviceId: wechat-core
+      serviceId: WECHAT-CORE
+# 设置允许延迟时间为10s
 hystrix:
   command:
     default:
