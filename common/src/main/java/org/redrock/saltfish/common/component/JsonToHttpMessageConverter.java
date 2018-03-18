@@ -1,17 +1,16 @@
-package org.redrock.saltfish.wechatcore.component;
+package org.redrock.saltfish.common.component;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-public class WechatMappingJackson2HttpMessageConverter extends MappingJackson2HttpMessageConverter {
+public class JsonToHttpMessageConverter extends MappingJackson2HttpMessageConverter {
 
-    public WechatMappingJackson2HttpMessageConverter(){
+    public JsonToHttpMessageConverter(){
         super();
         //添加返回处理类型
         List<MediaType> mediaTypes = new ArrayList<>();

@@ -1,12 +1,12 @@
 package org.redrock.saltfish.wechatcore.cofig;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.redrock.saltfish.wechatcore.component.JsonToHttpMessageConverter;
 import org.redrock.saltfish.common.component.StringUtil;
 import org.redrock.saltfish.common.component.TimeUtil;
 import org.redrock.saltfish.common.interceptor.InitInterceptor;
 import org.redrock.saltfish.common.resolver.UserInfoResolver;
 import org.redrock.saltfish.wechatcore.component.WechatExceptionResolver;
-import org.redrock.saltfish.wechatcore.component.WechatMappingJackson2HttpMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
@@ -21,7 +21,7 @@ public class BeanLoader {
      * 添加 Text/Plain 格式的消息转换器
      */
     @Bean
-    RestTemplate restTemplate(@Autowired WechatMappingJackson2HttpMessageConverter messageConverter) {
+    RestTemplate restTemplate(@Autowired JsonToHttpMessageConverter messageConverter) {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(messageConverter);
         return restTemplate;
@@ -90,6 +90,11 @@ public class BeanLoader {
     @Bean
     InitInterceptor initInterceptor() {
         return new InitInterceptor();
+    }
+
+    @Bean
+    JsonToHttpMessageConverter jsonToHttpMessageConverter() {
+        return new JsonToHttpMessageConverter();
     }
 
 }
