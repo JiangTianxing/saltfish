@@ -18,6 +18,7 @@
     <modules>
         <module>../wechat-core</module>
         <module>../common</module>
+        <module>../wechat-demo</module>
     </modules>
 
     <dependencies>
