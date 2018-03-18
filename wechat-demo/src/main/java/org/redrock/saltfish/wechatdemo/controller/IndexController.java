@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class IndexController {
 
     @Wechat(JwtAuth.class)
-    @GetMapping("/index")
+    @GetMapping("/userInfo")
     public UserInfo index(UserInfo userInfo) {
         return userInfo;
     }

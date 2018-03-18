@@ -1,4 +1,4 @@
-package org.redrock.saltfish.wechatdemo.component;
+package org.redrock.saltfish.wechatdemo.config;
 
 import org.redrock.saltfish.common.component.JsonToHttpMessageConverter;
 import org.redrock.saltfish.common.component.MyRestTemplate;
