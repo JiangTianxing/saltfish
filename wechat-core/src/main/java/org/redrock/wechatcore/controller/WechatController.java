@@ -4,6 +4,8 @@ import org.redrock.wechatcore.bean.Token;
 import org.redrock.wechatcore.bean.UserInfo;
 import org.redrock.wechatcore.exception.WechatException;
 import org.redrock.wechatcore.component.StringUtil;
+import org.redrock.wechatcore.interceptor.annotation.Wechat;
+import org.redrock.wechatcore.interceptor.impl.JwtAuth;
 import org.redrock.wechatcore.repository.WechatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,8 +52,9 @@ public class WechatController {
         return new ResponseEntity<>(tokenWithJwt, HttpStatus.OK);
     }
 
-    @PatchMapping("/token/{refresh_token}")
-    public ResponseEntity<Map> refreshTokenWithJwt(@PathVariable("refresh_token") Optional<String> refreshToken) throws WechatException {
+
+    @PatchMapping("/token")
+    public ResponseEntity<Map> refreshTokenWithJwt(@RequestHeader("refresh_token") Optional<String> refreshToken) throws WechatException {
         if (!refreshToken.isPresent()) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 参数不可为空");
         Token userToken = wechatRepository.updateUserAccessToken(refreshToken.get());
         Map<String, String> tokenWithJwt = new HashMap<>();
@@ -78,14 +81,10 @@ public class WechatController {
         return;
     }
 
+    @Wechat(JwtAuth.class)
     @GetMapping("/jwt")
-    public String jwt(@RequestHeader("Authentication") String authentication) {
-        String[] items = authentication.split("\\.");
-        if (items != null && items.length == 3) {
-            String data = stringRepository.base64Decode(items[1]);
-            return data;
-        }
-        return authentication;
+    public String jwt(UserInfo userInfo) {
+        return userInfo.getHeadimgurl();
     }
 
     @Autowired

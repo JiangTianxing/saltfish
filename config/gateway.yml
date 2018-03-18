@@ -9,6 +9,9 @@ zuul:
     wechat:
       path: /wechat/**
       serviceId: wechat-service
+  filter:
+    authHeader:
+      exclude: get:/wechat/access_token, get:/wechat/token,
 # 设置允许延迟时间为10s
 hystrix:
   command:

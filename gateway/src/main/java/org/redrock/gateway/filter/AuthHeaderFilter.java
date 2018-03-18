@@ -1,6 +1,5 @@
 package org.redrock.gateway.filter;
 
-import com.google.gson.Gson;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
@@ -11,8 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Component
 public class AuthHeaderFilter extends ZuulFilter {
@@ -21,6 +19,8 @@ public class AuthHeaderFilter extends ZuulFilter {
     RedisTemplate<String, String> redisTemplate;
     @Autowired
     StringUtil stringUtil;
+    @Autowired
+    List<String> data;
 
     @Override
     public String filterType() {
@@ -34,40 +34,31 @@ public class AuthHeaderFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
-        RequestContext context = RequestContext.getCurrentContext();
-        String uri = context.getRequest().getRequestURI();
-        System.out.println(uri);
         return true;
+
     }
 
     @Override
     public Object run() throws ZuulException {
-        RequestContext requestContext = RequestContext.getCurrentContext();
-        HttpServletRequest request = requestContext.getRequest();
-        HttpServletResponse response = requestContext.getResponse();
-        response.setCharacterEncoding("UTF-8");
-        String accessToken = request.getHeader("Authentication");
-        Gson gson = new Gson();
-        Map<String, String> errors = new HashMap<>();
-        if (stringUtil.isBlank(accessToken)) {
-            errors.put("errmsg", "access_token 不可为空");
-            String errmsg = gson.toJson(errors);
-            requestContext.setSendZuulResponse(false);
-            requestContext.setResponseStatusCode(HttpStatus.BAD_REQUEST.value());
-            requestContext.setResponseBody(errmsg);
-            return null;
-        }
-        String key = "access_token:" + accessToken;
+        RequestContext context = RequestContext.getCurrentContext();
+        HttpServletRequest request = context.getRequest();
+        HttpServletResponse response = context.getResponse();
+        String authentication = request.getHeader("Authentication");
+        if (stringUtil.isBlank(authentication)) return null;
+        authentication = authentication.trim();
+        if (!authentication.startsWith("Bearer ")) return null;
+        String accessToken = authentication.substring(authentication.indexOf(" ") + 1);
+        String accessTokenKey = "access_token:" + accessToken;
         String jwt;
-        if (!redisTemplate.hasKey(key) || stringUtil.isBlank(jwt = redisTemplate.opsForValue().get(key))) {
-            errors.put("errmsg", "access_token 无效");
-            String errmsg = gson.toJson(errors);
-            requestContext.setSendZuulResponse(false);
-            requestContext.setResponseStatusCode(HttpStatus.BAD_REQUEST.value());
-            requestContext.setResponseBody(errmsg);
+        if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(jwt = redisTemplate.opsForValue().get(accessTokenKey))) {
+            response.setCharacterEncoding("UTF-8");
+            String msg = "{\"errmsg\":\"access_token 无效\"}";
+            context.setSendZuulResponse(false);
+            context.setResponseStatusCode(HttpStatus.BAD_GATEWAY.value());
+            context.setResponseBody(msg);
             return null;
         }
-        requestContext.addZuulRequestHeader("Authentication", jwt);
+        context.addZuulRequestHeader("Authentication", "jwt " + jwt);
         return null;
     }
 }
