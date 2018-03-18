@@ -1,11 +1,12 @@
-package org.redrock.saltfish.wechatcore.config;
+package org.redrock.saltfish.wechatcore.cofig;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.redrock.saltfish.common.component.StringUtil;
 import org.redrock.saltfish.common.component.TimeUtil;
+import org.redrock.saltfish.common.interceptor.InitInterceptor;
 import org.redrock.saltfish.common.resolver.UserInfoResolver;
-import org.redrock.saltfish.wechatcore.component.WechatMappingJackson2HttpMessageConverter;
 import org.redrock.saltfish.wechatcore.component.WechatExceptionResolver;
+import org.redrock.saltfish.wechatcore.component.WechatMappingJackson2HttpMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
@@ -85,4 +86,10 @@ public class BeanLoader {
     TimeUtil timeUtil() {
         return new TimeUtil();
     }
+
+    @Bean
+    InitInterceptor initInterceptor() {
+        return new InitInterceptor();
+    }
+
 }

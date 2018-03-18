@@ -1,4 +1,4 @@
-package org.redrock.saltfish.wechatcore.config;
+package org.redrock.saltfish.wechatcore.cofig;
 
 import org.redrock.saltfish.common.interceptor.InitInterceptor;
 import org.redrock.saltfish.common.resolver.UserInfoResolver;

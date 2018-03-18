@@ -1,4 +1,4 @@
-package org.redrock.saltfish.wechatcore.config;
+package org.redrock.saltfish.wechatcore.cofig;
 
 public class Api {
     public static final String AccessTokenApi = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";

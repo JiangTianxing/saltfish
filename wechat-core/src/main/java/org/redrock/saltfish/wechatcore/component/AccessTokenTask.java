@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
-import static org.redrock.saltfish.wechatcore.config.Api.*;
+
+import static org.redrock.saltfish.wechatcore.cofig.Api.AccessTokenApi;
 
 @Component
 public class AccessTokenTask {
