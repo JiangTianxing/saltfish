@@ -8,7 +8,7 @@ zuul:
   routes:
     wechat:
       path: /wechat/**
-      serviceId: WECHAT-CORE
+      serviceId: wechat-service
 # 设置允许延迟时间为10s
 hystrix:
   command:
