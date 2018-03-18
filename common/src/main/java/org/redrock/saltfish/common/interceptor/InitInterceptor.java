@@ -40,7 +40,6 @@ public class InitInterceptor implements HandlerInterceptor {
                             httpServletResponse.getWriter().write(msg);
                             return false;
                         }
-                        e.printStackTrace();
                     }
                 }
             }

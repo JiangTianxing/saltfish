@@ -17,7 +17,6 @@ import java.util.Map;
 /**
  * 全局的WechatException 消息处理器
  */
-@Component
 public class WechatExceptionResolver implements HandlerExceptionResolver{
 
     @Nullable

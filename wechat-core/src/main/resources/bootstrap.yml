@@ -1,11 +1,20 @@
 spring:
   application:
     name: wechat-core
-  cloud:
-    config:
-      discovery:
-        enabled: true
-        service-id: config-server
+#  cloud:
+#    config:
+#      discovery:
+#        enabled: true
+#        service-id: config-server
+  datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: "jdbc:mysql://127.0.0.1:3306/wechat?useUnicode=true&characterEncoding=UTF-8&useTimezone=true&serverTimezone=PRC&useSSL=false"
+      username: root
+      password:
+      initialSize: 2
+      maxActive: 20
+      minIdle: 0
+      maxWait: 60000
 server:
   port: 8080
 eureka:
@@ -13,3 +22,11 @@ eureka:
     service-url:
 #      defaultZone: http://discovery:8080/eureka
       defaultZone: http://jiangtianxing:jiangtianxing@localhost:8761/eureka
+
+word: hello world
+# 微信接入配置
+wechat:
+  appId: "wxdab44034ceb528e8"
+  appSecret: "ef79ebb78a637b1c36c10cd06e811d2c"
+  token: "woshijiangtianxing"
+  index: "http://jiangtianixng.s1.natapp.link/core/auth"
