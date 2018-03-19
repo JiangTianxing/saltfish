@@ -1,17 +1,18 @@
 package org.redrock.saltfish.wechatdemo.controller;
 
-import org.redrock.saltfish.common.bean.UserInfo;
-import org.redrock.saltfish.common.interceptor.annotation.Wechat;
-import org.redrock.saltfish.common.interceptor.impl.JwtAuth;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 public class IndexController {
 
-    @Wechat(JwtAuth.class)
-    @GetMapping("/userInfo")
-    public UserInfo index(UserInfo userInfo) {
-        return userInfo;
+    @RequestMapping(value = "/index", method = {RequestMethod.GET, RequestMethod.POST})
+    public String index(@RequestBody Map<String, Object> data) {
+        System.out.println(data.toString());
+        return data.toString();
     }
 }

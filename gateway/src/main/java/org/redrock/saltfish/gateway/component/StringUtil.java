@@ -1,5 +1,7 @@
 package org.redrock.saltfish.gateway.component;
 
+import com.google.gson.JsonObject;
+import jdk.nashorn.internal.runtime.regexp.joni.constants.NodeType;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -8,7 +10,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,22 +48,7 @@ public class StringUtil {
     }
 
     public String xmlToJson(String xml) {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document document = db.parse(xml);
-
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    static String parseXml(String xml) {
+        String result = "";
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -73,28 +59,16 @@ public class StringUtil {
             NodeList childNodes = root.getChildNodes();
             int len;
             if (childNodes != null && (len = childNodes.getLength()) > 0) {
+                JsonObject data = new JsonObject();
                 for (int i = 0; i < len; i++) {
                     Node childNode = childNodes.item(i);
-                    String name = childNode.getNodeName();
-                    String value = childNode.getTextContent();
-                    System.out.println(name);
-                    System.out.println(value);
-                    System.out.println(childNode.getNodeType());
-                    if (childNode.hasChildNodes()) {
-                        NodeList nodeList = childNode.getChildNodes();
-                        int length = 0;
-                        if (nodeList != null && (length = nodeList.getLength()) > 0) {
-                            for (int j = 0; j < length; j++) {
-                                Node node = nodeList.item(j);
-                                String nName = node.getNodeName();
-                                String nValue = node.getNodeValue();
-                                System.out.println(nName);
-                                System.out.println(nValue);
-                                System.out.println(childNode.getNodeType());
-                            }
-                        }
+                    if (childNode.getNodeType() != NodeType.CANY) {
+                        String name = childNode.getNodeName();
+                        String value = childNode.getTextContent();
+                        data.addProperty(name, value);
                     }
                 }
+                result = data.toString();
             }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -103,12 +77,7 @@ public class StringUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
-    }
-
-    public static void main(String[] args) {
-//        String xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><breakfast_menu><food><name>Belgian Waffles</name><price>$5.95</price><description>Two of our famous Belgian Waffles with plenty of real maple syrup</description><calories>650</calories></food><food><name>Strawberry Belgian Waffles</name><price>$7.95</price><description>Light Belgian waffles covered with strawberries and whipped cream</description><calories>900</calories></food><food><name>Berry-Berry Belgian Waffles</name><price>$8.95</price><description>Light Belgian waffles covered with an assortment of fresh berries and whipped cream</description><calories>900</calories></food><food><name>French Toast</name><price>$4.50</price><description>Thick slices made from our homemade sourdough bread</description><calories>600</calories></food><food><name>Homestyle Breakfast</name><price>$6.95</price><description>Two eggs, bacon or sausage, toast, and our ever-popular hash browns</description><calories>950</calories></food></breakfast_menu>";
-        String xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><xml><ToUserName><![CDATA[sdfsdf]]></ToUserName><FromUserName><![CDATA[xsdfxdfsdf]]></FromUserName><CreateTime>123456789</CreateTime><MsgType><![CDATA[zxfczxczxc]]></MsgType><Event><![CDATA[subscribe]]></Event></xml>\n";
-        parseXml(xml);
+        System.out.println(result);
+        return result;
     }
 }

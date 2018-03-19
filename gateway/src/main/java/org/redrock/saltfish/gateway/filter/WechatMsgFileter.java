@@ -3,11 +3,15 @@ package org.redrock.saltfish.gateway.filter;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
+import com.netflix.zuul.http.ServletInputStreamWrapper;
 import org.redrock.saltfish.gateway.component.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 
+@Component
 public class WechatMsgFileter extends ZuulFilter {
     @Override
     public String filterType() {
@@ -67,6 +72,7 @@ public class WechatMsgFileter extends ZuulFilter {
                 result = echostr;
             }
         }
+        context.setSendZuulResponse(false);
         context.setResponseBody(result);
         context.setResponseStatusCode(HttpStatus.OK.value());
         return null;
@@ -83,9 +89,25 @@ public class WechatMsgFileter extends ZuulFilter {
             while ((line = reader.readLine()) != null) {
                 builder.append(line);
             }
+            reader.close();
             String xml = builder.toString();
-            System.out.println(xml);
-            stringUtil.xmlToJson(xml);
+            String msg = stringUtil.xmlToJson(xml);
+            context.setRequest(
+                    new HttpServletRequestWrapper(context.getRequest()) {
+                        @Override
+                        public ServletInputStream getInputStream() throws IOException {
+                            return new ServletInputStreamWrapper(msg.getBytes());
+                        }
+                        @Override
+                        public int getContentLength() {
+                            return msg.getBytes().length;
+                        }
+                        @Override
+                        public long getContentLengthLong() {
+                            return msg.getBytes().length;
+                        }
+                    }
+            );
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (IOException e) {
