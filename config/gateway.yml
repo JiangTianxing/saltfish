@@ -16,8 +16,8 @@ zuul:
     host:
       connections: 500
   host:
-    socket-timeout-millis: -1
-    connect-timeout-millis: -1
+    socket-timeout-millis: 60000
+    connect-timeout-millis: 60000
 # 设置允许延迟时间为10s
 hystrix:
   command:
@@ -25,7 +25,7 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: -1
+            timeoutInMilliseconds: 60000
 wechat:
   token: woshijiangtianxing
   msg:
