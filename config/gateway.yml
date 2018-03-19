@@ -9,9 +9,9 @@ zuul:
     wechat:
       path: /wechat/**
       serviceId: wechat-core
-#    demo:
-#      path: /demo/**
-#      serviceId: wechat-demo
+    demo:
+      path: /demo/**
+      serviceId: wechat-demo
   max:
     host:
       connections: 500
