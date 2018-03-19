@@ -1,6 +1,6 @@
 package org.redrock.saltfish.common.interceptor;
 
-import org.redrock.saltfish.common.exception.WechatException;
+import org.redrock.saltfish.common.exception.RequestException;
 import org.redrock.saltfish.common.interceptor.annotation.Wechat;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -31,9 +31,9 @@ public class InitInterceptor implements HandlerInterceptor {
                         return (boolean) method.invoke(object, params);
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassCastException e) {
                         Throwable cause = e.getCause();
-                        if(cause instanceof WechatException){
+                        if(cause instanceof RequestException){
                             httpServletResponse.setContentType("application/json;charset=UTF-8");
-                            WechatException exception = (WechatException) cause;
+                            RequestException exception = (RequestException) cause;
                             int code = exception.getHttpStatus().value();
                             String msg = "{\"errmsg\":\""+exception.getMsg()+"\"}";
                             httpServletResponse.setStatus(code);

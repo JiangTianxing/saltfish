@@ -3,7 +3,7 @@ package org.redrock.saltfish.common.interceptor.impl;
 import com.google.gson.Gson;
 import org.redrock.saltfish.common.bean.UserInfo;
 import org.redrock.saltfish.common.component.StringUtil;
-import org.redrock.saltfish.common.exception.WechatException;
+import org.redrock.saltfish.common.exception.RequestException;
 import org.redrock.saltfish.common.interceptor.BaseInterceptor;
 import org.springframework.http.HttpStatus;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +33,6 @@ public class JwtAuth implements BaseInterceptor {
                 }
             }
         }
-        throw new WechatException(HttpStatus.NOT_FOUND, "查询不到用户信息");
+        throw new RequestException(HttpStatus.NOT_FOUND, "查询不到用户信息");
     }
 }

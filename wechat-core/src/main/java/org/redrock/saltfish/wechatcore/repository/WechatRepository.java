@@ -6,7 +6,7 @@ import org.redrock.saltfish.common.component.StringUtil;
 import org.redrock.saltfish.wechatcore.bean.Token;
 import org.redrock.saltfish.wechatcore.cofig.Api;
 import org.redrock.saltfish.wechatcore.component.RedisLock;
-import org.redrock.saltfish.common.exception.WechatException;
+import org.redrock.saltfish.common.exception.RequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -41,10 +41,10 @@ public class WechatRepository {
      * @param code
      * @return
      */
-    public Token getUserAccessToken(String code) throws WechatException {
+    public Token getUserAccessToken(String code) throws RequestException {
         String api = String.format(Api.UserAccessTokenApi, appId, appSecret, code);
         Token token = restTemplate.getForObject(api, Token.class);
-        if (token == null || !token.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "code 无效");
+        if (token == null || !token.valid()) throw new RequestException(HttpStatus.BAD_REQUEST, "code 无效");
         return token;
     }
 
@@ -52,12 +52,12 @@ public class WechatRepository {
      * 考虑到可能后面会有多个服务实例，应该使用分布式锁
      * @param refreshToken
      * @return
-     * @throws WechatException
+     * @throws RequestException
      */
-    public Token updateUserAccessToken(String refreshToken) throws WechatException {
+    public Token updateUserAccessToken(String refreshToken) throws RequestException {
         Token token;
         String refreshTokenKey = "refresh_token:" + refreshToken;
-        if (!redisTemplate.hasKey(refreshTokenKey)) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
+        if (!redisTemplate.hasKey(refreshTokenKey)) throw new RequestException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
         String oldAccessToken = (String) redisTemplate.opsForHash().get(refreshTokenKey, "access_token");
         String accessTokenKey = "access_token:" + oldAccessToken;
         if (redisTemplate.hasKey(accessTokenKey)) {
@@ -85,7 +85,7 @@ public class WechatRepository {
             token = restTemplate.getForObject(api, Token.class);
             if (token == null || !token.valid()) {
                 redisLock.unlock();
-                throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
+                throw new RequestException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
             }
             redisTemplate.opsForHash().put(refreshTokenKey, "access_token", token.getAccessToken());
             redisTemplate.delete(accessTokenKey);
@@ -100,11 +100,11 @@ public class WechatRepository {
      * @param openid
      * @return
      */
-    public UserInfo getUserInfo(String openid) throws WechatException {
+    public UserInfo getUserInfo(String openid) throws RequestException {
         String accessToken = getAccessToken();
         String api = String.format(Api.UserInfoApi, accessToken, openid);
         UserInfo userInfo = restTemplate.getForObject(api, UserInfo.class);
-        if (userInfo == null || !userInfo.valid()) throw new WechatException(HttpStatus.BAD_REQUEST, "openid 错误");
+        if (userInfo == null || !userInfo.valid()) throw new RequestException(HttpStatus.BAD_REQUEST, "openid 错误");
         return userInfo;
     }
 

@@ -19,6 +19,7 @@
         <module>../wechat-core</module>
         <module>../common</module>
         <module>../wechat-demo</module>
+        <module>../user-center</module>
     </modules>
 
     <dependencies>

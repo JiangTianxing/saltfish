@@ -30,7 +30,7 @@ public class BeanLoader {
     }
 
     /**
-     * 消息转换器
+     * 加载 消息转换器
      * @return
      */
     @Bean
@@ -39,7 +39,7 @@ public class BeanLoader {
     }
 
     /**
-     * 
+     * 加载 restful接口调用模板
      * @return
      */
     @Bean

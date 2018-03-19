@@ -3,7 +3,7 @@ package org.redrock.saltfish.wechatcore.controller;
 import org.redrock.saltfish.common.bean.UserInfo;
 import org.redrock.saltfish.common.component.StringUtil;
 import org.redrock.saltfish.wechatcore.bean.Token;
-import org.redrock.saltfish.common.exception.WechatException;
+import org.redrock.saltfish.common.exception.RequestException;
 import org.redrock.saltfish.common.interceptor.annotation.Wechat;
 import org.redrock.saltfish.common.interceptor.impl.JwtAuth;
 import org.redrock.saltfish.wechatcore.repository.WechatRepository;
@@ -36,11 +36,11 @@ public class WechatController {
      * 通过 code 获取 oauth token 以及 内部调用凭证 jwt
      * @param code
      * @return
-     * @throws WechatException
+     * @throws RequestException
      */
     @GetMapping("/token/{code}")
-    public ResponseEntity<Map> getTokenWithJwt(@PathVariable("code") Optional<String> code) throws WechatException {
-        if (!code.isPresent()) throw new WechatException(HttpStatus.BAD_REQUEST, "code 参数不可为空");
+    public ResponseEntity<Map> getTokenWithJwt(@PathVariable("code") Optional<String> code) throws RequestException {
+        if (!code.isPresent()) throw new RequestException(HttpStatus.BAD_REQUEST, "code 参数不可为空");
         Token userToken = wechatRepository.getUserAccessToken(code.get());
         UserInfo userInfo = wechatRepository.getUserInfo(userToken.getOpenid());
         String jwt = wechatRepository.createJwt(userInfo);
@@ -54,8 +54,8 @@ public class WechatController {
 
 
     @PatchMapping("/token")
-    public ResponseEntity<Map> refreshTokenWithJwt(@RequestHeader("refresh_token") Optional<String> refreshToken) throws WechatException {
-        if (!refreshToken.isPresent()) throw new WechatException(HttpStatus.BAD_REQUEST, "refresh_token 参数不可为空");
+    public ResponseEntity<Map> refreshTokenWithJwt(@RequestHeader("refresh_token") Optional<String> refreshToken) throws RequestException {
+        if (!refreshToken.isPresent()) throw new RequestException(HttpStatus.BAD_REQUEST, "refresh_token 参数不可为空");
         Token userToken = wechatRepository.updateUserAccessToken(refreshToken.get());
         Map<String, String> tokenWithJwt = new HashMap<>();
         tokenWithJwt.put("access_token", userToken.getAccessToken());
