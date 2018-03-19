@@ -12,6 +12,12 @@ zuul:
     demo:
       path: /demo/**
       serviceId: wechat-demo
+  max:
+    host:
+      connections: 500
+  host:
+    socket-timeout-millis: 60000
+    connect-timeout-millis: 60000
 # 设置允许延迟时间为10s
 hystrix:
   command:
