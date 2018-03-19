@@ -9,9 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableZuulProxy
 @EnableEurekaClient
 @SpringBootApplication
-@ComponentScan(basePackages = {
-        "org.redrock.saltfish.gateway.*"
-})
+@ComponentScan(basePackages = {"org.redrock.saltfish.gateway.*"})
 public class GatewayApplication {
 
 	public static void main(String[] args) {

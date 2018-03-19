@@ -34,6 +34,12 @@ public class AuthHeaderFilter extends ZuulFilter {
         return true;
     }
 
+    /**
+     * 约定大于配置
+     * 如果当前请求header中携带Authroization字段，则自动将其转化为用户信息jwt
+     * @return
+     * @throws ZuulException
+     */
     @Override
     public Object run() throws ZuulException {
         RequestContext context = RequestContext.getCurrentContext();

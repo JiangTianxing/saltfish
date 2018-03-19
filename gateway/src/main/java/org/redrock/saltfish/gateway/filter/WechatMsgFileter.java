@@ -31,6 +31,10 @@ public class WechatMsgFileter extends ZuulFilter {
         return 0;
     }
 
+    /**
+     * 判断当前链接是否为 微信消息入口，消息入口相关配置在网关的配置文件中 wechat.message.path
+     * @return
+     */
     @Override
     public boolean shouldFilter() {
         RequestContext context = RequestContext.getCurrentContext();
@@ -54,6 +58,12 @@ public class WechatMsgFileter extends ZuulFilter {
         return null;
     }
 
+    /**
+     * 进行权限验证
+     * @param request
+     * @param context
+     * @return
+     */
     private Object doGet(HttpServletRequest request, RequestContext context) {
         String result = "";
         String signature = request.getParameter("signature");
@@ -78,6 +88,12 @@ public class WechatMsgFileter extends ZuulFilter {
         return null;
     }
 
+    /**
+     * 将xml格式的消息统一转化为json格式以requestBody的形式传递给下一服务
+     * @param request
+     * @param context
+     * @return
+     */
     private Object doPost(HttpServletRequest request, RequestContext context) {
         try {
             BufferedReader reader = new BufferedReader(
@@ -118,9 +134,11 @@ public class WechatMsgFileter extends ZuulFilter {
     @Autowired
     StringUtil stringUtil;
 
+    //微信token
     @Value("${wechat.token}")
     String token;
 
+    // 消息入口路径
     @Value("${wechat.msg.path}")
     List<String> pathes;
 }

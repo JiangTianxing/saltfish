@@ -47,6 +47,11 @@ public class StringUtil {
         return encodeStr;
     }
 
+    /**
+     * xml 转化微信
+     * @param xml
+     * @return
+     */
     public String xmlToJson(String xml) {
         String result = "";
         try {
