@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.redrock.saltfish.wechatcore.cofig.Api.AccessTokenApi;
+import static org.redrock.saltfish.wechatcore.config.Api.AccessTokenApi;
 
 @Component
 public class AccessTokenTask {

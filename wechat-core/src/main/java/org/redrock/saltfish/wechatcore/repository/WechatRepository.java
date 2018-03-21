@@ -6,7 +6,8 @@ import org.redrock.saltfish.common.bean.UserInfo;
 import org.redrock.saltfish.common.component.StringUtil;
 import org.redrock.saltfish.common.service.UserRepository;
 import org.redrock.saltfish.wechatcore.bean.Token;
-import org.redrock.saltfish.wechatcore.cofig.Api;
+import org.redrock.saltfish.wechatcore.component.JsonToHttpMessageConverter;
+import org.redrock.saltfish.wechatcore.config.Api;
 import org.redrock.saltfish.wechatcore.component.RedisLock;
 import org.redrock.saltfish.common.exception.RequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
-import java.util.HashMap;
+
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +46,7 @@ public class WechatRepository {
      */
     public Token getUserAccessToken(String code) throws RequestException {
         String api = String.format(Api.UserAccessTokenApi, appId, appSecret, code);
-        Token token = restTemplate.getForObject(api, Token.class);
+        Token token = template.getForObject(api, Token.class);
         if (token == null || !token.valid()) throw new RequestException(HttpStatus.BAD_REQUEST, "code 无效");
         return token;
     }
@@ -84,7 +85,7 @@ public class WechatRepository {
                 return token;
             }
             String api = String.format(Api.RefreshUserAccessTokenApi, appId, refreshToken);
-            token = restTemplate.getForObject(api, Token.class);
+            token = template.getForObject(api, Token.class);
             if (token == null || !token.valid()) {
                 redisLock.unlock();
                 throw new RequestException(HttpStatus.BAD_REQUEST, "refresh_token 无效");
@@ -105,7 +106,7 @@ public class WechatRepository {
     public UserInfo getUserInfo(String openid) throws RequestException {
         String accessToken = getAccessToken();
         String api = String.format(Api.UserInfoApi, accessToken, openid);
-        UserInfo userInfo = restTemplate.getForObject(api, UserInfo.class);
+        UserInfo userInfo = template.getForObject(api, UserInfo.class);
         if (userInfo == null || !userInfo.valid()) throw new RequestException(HttpStatus.BAD_REQUEST, "openid 错误");
         return userInfo;
     }
@@ -187,6 +188,11 @@ public class WechatRepository {
         return false;
     }
 
+    RestTemplate template;
+    {
+        template = new RestTemplate();
+        template.getMessageConverters().add(new JsonToHttpMessageConverter());
+    }
     @Autowired
     UserRepository userRepository;
     @Autowired

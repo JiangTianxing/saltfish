@@ -20,11 +20,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>se.jiderhamn</groupId>
-			<artifactId>classloader-leak-prevention</artifactId>
-			<version>1.13.0</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 			<version>1.4</version>
@@ -52,6 +47,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-ribbon</artifactId>
+			<version>1.4.3.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.redrock.saltfish</groupId>

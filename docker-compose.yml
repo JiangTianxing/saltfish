@@ -47,3 +47,15 @@ services:
       - rabbitmq
       - mysql
 
+  wechat-core:
+    image: saltfish/wechat-core
+    restart: always
+    ports:
+      - "8082:8080"
+    links:
+      - discovery
+      - config-server
+      - rabbitmq
+      - mysql
+      - user-center
+
