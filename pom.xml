@@ -26,10 +26,11 @@
     </properties>
 
     <modules>
-        <module>discovery</module>
-        <module>config-server</module>
-        <module>gateway</module>
+        <!--<module>discovery</module>-->
+        <!--<module>config-server</module>-->
+        <!--<module>gateway</module>-->
         <module>app</module>
+        <module>common</module>
     </modules>
 
     <dependencies>
@@ -75,6 +76,19 @@
                             <include>${project.name}.jar</include>
                         </resource>
                     </resources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.allen.capturewebdata.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
             </plugin>
         </plugins>

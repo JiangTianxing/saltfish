@@ -8,7 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-@Component
 public class StringUtil {
     public boolean isBlank(String str) {
         return str == null || str.trim().equalsIgnoreCase("");

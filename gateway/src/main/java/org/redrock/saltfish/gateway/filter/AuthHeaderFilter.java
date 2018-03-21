@@ -71,14 +71,16 @@ public class AuthHeaderFilter extends ZuulFilter {
             String accessTokenKey = "access_token:" + accessToken;
             String userinfo;
             if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(userinfo = redisTemplate.opsForValue().get(accessTokenKey))) {
-            response.setCharacterEncoding("UTF-8");
-            String msg = "{\"errmsg\":\"access_token 无效\"}";
-            context.setSendZuulResponse(false);
-            context.setResponseStatusCode(HttpStatus.NOT_FOUND.value());
-            context.setResponseBody(msg);
-            return null;
+                response.setCharacterEncoding("UTF-8");
+                String msg = "{\"errmsg\":\"access_token 无效\"}";
+                context.setSendZuulResponse(false);
+                context.setResponseStatusCode(HttpStatus.NOT_FOUND.value());
+                context.setResponseBody(msg);
+                return null;
+            }
+//        context.addZuulRequestHeader("Authorization", "userInfo " + userinfo);
+//            DispatcherServlet dispatcherServlet = new DispatcherServlet();
         }
-        context.addZuulRequestHeader("Authorization", "userInfo " + userinfo);
-            DispatcherServlet dispatcherServlet = new DispatcherServlet();
+        return null;
     }
 }

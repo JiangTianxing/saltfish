@@ -2,7 +2,7 @@ spring:
 # 数据源配置
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: "jdbc:mysql://127.0.0.1:3306/user_center?useUnicode=true&characterEncoding=UTF-8&useTimezone=true&serverTimezone=PRC&useSSL=false"
+    url: "jdbc:mysql://mysql:3306/user_center?useUnicode=true&characterEncoding=UTF-8&useTimezone=true&serverTimezone=PRC&useSSL=false"
     username: root
     password:
     initialSize: 2

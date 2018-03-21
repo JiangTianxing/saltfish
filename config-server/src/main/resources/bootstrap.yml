@@ -10,11 +10,10 @@ spring:
           default-label: master
         default-profile: dev
 server:
-  port: 9000
+  port: 8080
 eureka:
   client:
     service-url:
-      defaultZone: http://jiangtianxing:jiangtianxing@localhost:8761/eureka
-#      defaultZone: http://jiangtianxing:jiangtianxing@discovery:8080/eureka
+      defaultZone: http://jiangtianxing:jiangtianxing@discovery:8080/eureka
   instance:
     prefer-ip-address: false
