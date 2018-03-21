@@ -5,10 +5,8 @@ import org.redrock.saltfish.common.component.StringUtil;
 import org.redrock.saltfish.common.component.TimeUtil;
 import org.redrock.saltfish.common.resolver.RequestExceptionResolver;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import se.jiderhamn.classloader.leak.prevention.ClassLoaderLeakPreventor;
 
 @Component
 public class BeanLoader {
@@ -26,12 +24,12 @@ public class BeanLoader {
     /**
      * 开启内存泄漏监听器
      */
-    @Bean
-    public ServletListenerRegistrationBean servletListenerRegistrationBean(){
-        ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
-        servletListenerRegistrationBean.setListener(new ClassLoaderLeakPreventor());
-        return servletListenerRegistrationBean;
-    }
+//    @Bean
+//    public ServletListenerRegistrationBean servletListenerRegistrationBean(){
+//        ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
+//        servletListenerRegistrationBean.setListener(new ClassLoaderLeakPreventor());
+//        return servletListenerRegistrationBean;
+//    }
 
     /**
      * 注册全局的wechat异常处理器

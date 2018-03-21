@@ -26,8 +26,3 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 60000
-# 指定微信消息发送的相关配置
-wechat:
-  msg:
-    path: /demo/index
-  token: woshijiangtianxing

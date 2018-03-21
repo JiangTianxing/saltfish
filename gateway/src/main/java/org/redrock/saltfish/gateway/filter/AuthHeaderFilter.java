@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.DispatcherServlet;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,7 +33,7 @@ public class AuthHeaderFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
-        return true;
+        return !stringUtil.isBlank(RequestContext.getCurrentContext().getRequest().getHeader("Authorization"));
     }
 
     /**
@@ -45,22 +47,38 @@ public class AuthHeaderFilter extends ZuulFilter {
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
-        String authentication = request.getHeader("Authorization");
-        if (stringUtil.isBlank(authentication)) return null;
-        authentication = authentication.trim();
-        if (!authentication.startsWith("Bearer ")) return null;
-        String accessToken = authentication.substring(authentication.indexOf(" ") + 1);
-        String accessTokenKey = "access_token:" + accessToken;
-        String jwt;
-        if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(jwt = redisTemplate.opsForValue().get(accessTokenKey))) {
+//        String[] authItems = request.getHeader("Authorization").split(" ");
+
+        //        String accessToken = authentication.substring(authentication.indexOf(" ") + 1);
+//        String accessTokenKey = "access_token:" + accessToken;
+//        String userinfo;
+//        if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(userinfo = redisTemplate.opsForValue().get(accessTokenKey))) {
+//            response.setCharacterEncoding("UTF-8");
+//            String msg = "{\"errmsg\":\"access_token 无效\"}";
+//            context.setSendZuulResponse(false);
+//            context.setResponseStatusCode(HttpStatus.NOT_FOUND.value());
+//            context.setResponseBody(msg);
+//            return null;
+//        }
+//        context.addZuulRequestHeader("Authorization", "userInfo " + userinfo);
+////        if (stringUtil.isBlank(request.getHeader("detailed")))
+//        String expect = request.getref
+//        return null;
+        String[] items = request.getHeader("Authorization").split(" ");
+        if (items != null && items.length == 2) {
+            String type = items[0];
+            String accessToken = items[1];
+            String accessTokenKey = "access_token:" + accessToken;
+            String userinfo;
+            if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(userinfo = redisTemplate.opsForValue().get(accessTokenKey))) {
             response.setCharacterEncoding("UTF-8");
             String msg = "{\"errmsg\":\"access_token 无效\"}";
             context.setSendZuulResponse(false);
-            context.setResponseStatusCode(HttpStatus.BAD_GATEWAY.value());
+            context.setResponseStatusCode(HttpStatus.NOT_FOUND.value());
             context.setResponseBody(msg);
             return null;
         }
-        context.addZuulRequestHeader("Authorization", "jwt " + jwt);
-        return null;
+        context.addZuulRequestHeader("Authorization", "userInfo " + userinfo);
+            DispatcherServlet dispatcherServlet = new DispatcherServlet();
     }
 }

@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.List;
 
 @Component
 public class WechatMsgFileter extends ZuulFilter {
@@ -37,15 +36,9 @@ public class WechatMsgFileter extends ZuulFilter {
      */
     @Override
     public boolean shouldFilter() {
-        RequestContext context = RequestContext.getCurrentContext();
-        HttpServletRequest request = context.getRequest();
-        if (pathes.size() > 0) {
-            String uri = request.getRequestURI();
-            for (String path : pathes) {
-                if (uri.equalsIgnoreCase(path)) return true;
-            }
-        }
-        return false;
+        HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
+        String uri = request.getRequestURI();
+        return uri.endsWith(pathSuffix);
     }
 
     @Override
@@ -139,6 +132,6 @@ public class WechatMsgFileter extends ZuulFilter {
     String token;
 
     // 消息入口路径
-    @Value("${wechat.msg.path}")
-    List<String> pathes;
+    @Value("${wechat.msg.path-suffix}")
+    String pathSuffix;
 }

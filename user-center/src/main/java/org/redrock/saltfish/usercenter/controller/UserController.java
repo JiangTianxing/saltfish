@@ -8,13 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 public class UserController {
 
     @GetMapping("/userinfo/{openid}")
-    public String userinfo(@PathVariable("openid") Optional<String> openid) throws RequestException {
+    public Map<String, String> userinfo(@PathVariable("openid") Optional<String> openid) throws RequestException {
         if (!openid.isPresent()) throw new RequestException(HttpStatus.BAD_REQUEST, "openid 不可为空");
         return userRepository.getDetailedUserInfo(openid.get());
     }

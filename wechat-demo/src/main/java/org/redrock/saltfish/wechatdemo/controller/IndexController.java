@@ -1,8 +1,8 @@
 package org.redrock.saltfish.wechatdemo.controller;
 
 import org.redrock.saltfish.common.bean.UserInfo;
-import org.redrock.saltfish.common.interceptor.annotation.Wechat;
-import org.redrock.saltfish.common.interceptor.impl.JwtAuth;
+import org.redrock.saltfish.common.interceptor.annotation.Before;
+import org.redrock.saltfish.common.interceptor.impl.UserInfoAuth;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
@@ -25,7 +25,7 @@ public class IndexController {
      * @param userInfo
      * @return
      */
-    @Wechat(JwtAuth.class)
+    @Before(UserInfoAuth.class)
     @GetMapping("/userinfo")
     public UserInfo userInfo(UserInfo userInfo) {
         return userInfo;

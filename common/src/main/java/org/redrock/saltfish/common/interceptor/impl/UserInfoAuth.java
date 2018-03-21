@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class JwtAuth implements BaseInterceptor {
+public class UserInfoAuth implements BaseInterceptor {
 
     private final static String UserInfoPath = UserInfo.class.toString();
 
@@ -20,7 +20,7 @@ public class JwtAuth implements BaseInterceptor {
         String authentication = httpServletRequest.getHeader("Authorization");
         if (!stringUtil.isBlank(authentication)) {
             authentication = authentication.trim();
-            if (authentication.startsWith("jwt")) {
+            if (authentication.startsWith("userInfo")) {
                 String jwt = authentication.substring(authentication.indexOf(" ") + 1);
                 String[] items = jwt.split("\\.");
                 if (items != null && items.length == 3) {

@@ -1,8 +1,10 @@
 package org.redrock.saltfish.wechatcore.repository;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.redrock.saltfish.common.bean.UserInfo;
 import org.redrock.saltfish.common.component.StringUtil;
+import org.redrock.saltfish.common.service.UserRepository;
 import org.redrock.saltfish.wechatcore.bean.Token;
 import org.redrock.saltfish.wechatcore.cofig.Api;
 import org.redrock.saltfish.wechatcore.component.RedisLock;
@@ -69,7 +71,7 @@ public class WechatRepository {
                 return token;
             }
         }
-        String jwt = (String) redisTemplate.opsForHash().get(refreshTokenKey, "jwt");
+        String userInfo = (String) redisTemplate.opsForHash().get(refreshTokenKey, "userInfo");
         RedisLock redisLock = new RedisLock(redisTemplate, refreshToken);
         redisLock.lock();
             accessTokenKey = "access_token:" + redisTemplate.opsForHash().get(refreshTokenKey, "access_token");
@@ -90,7 +92,7 @@ public class WechatRepository {
             redisTemplate.opsForHash().put(refreshTokenKey, "access_token", token.getAccessToken());
             redisTemplate.delete(accessTokenKey);
             accessTokenKey = "access_token:" + token.getAccessToken();
-            redisTemplate.opsForValue().set(accessTokenKey, jwt, 2, TimeUnit.HOURS);
+            redisTemplate.opsForValue().set(accessTokenKey, userInfo, 2, TimeUnit.HOURS);
         redisLock.unlock();
         return token;
     }
@@ -110,28 +112,41 @@ public class WechatRepository {
 
     /**
      * 根据用户信息创建内部调用jwt
-     * @param userInfo
+     * @param payloadStr
      * @return
      */
-    public String createJwt(UserInfo userInfo) {
+    public String createJwt(String payloadStr) {
+        JsonObject headerData = new JsonObject();
+        headerData.addProperty("alg", "256");
+        headerData.addProperty("typ", "jwt");
+        String header = stringUtil.base64Encode(headerData.toString());
+        String payload = stringUtil.base64Encode(payloadStr);
+        String signature = stringUtil.getSHA256Str(header + "." + payload);
+        return header + "." + payload + "." + signature;
+    }
+
+    public String createJwt(Object payload) {
         Gson gson = new Gson();
-        Map<String, String> header = new HashMap<>();
-        header.put("alg", "256");
-        header.put("typ", "jwt");
-        String headerStr = stringUtil.base64Encode(gson.toJson(header));
-        String payload = stringUtil.base64Encode(gson.toJson(userInfo));
-        String signature = stringUtil.getSHA256Str(headerStr + "." + payload + secret);
-        return headerStr + "." + payload + "." + signature;
+        String payloadStr = gson.toJson(payload);
+        return createJwt(payloadStr);
     }
 
     /**
      * 将相关信息存入session，同时删除无用的 refresh_token 与 access_token
-     * @param jwt
+     * 获取用户详细信息
+     * @param userInfo
      * @param token
      */
-    public void saveJwtAndToken(String jwt, Token token) {
-        // 通过openid 删除之前所有的权限数据
-        String openidKey = "openid:" + token.getOpenid();
+    public void saveTokenAndUserInfo(UserInfo userInfo, Token token) throws RequestException {
+        //存储用户详细信息 detailedUserInfo
+        String openId = token.getOpenid();
+        Map<String, String> detailedUserInfoData = userRepository.getDetailedUserInfo(openId);
+        String type = detailedUserInfoData.get("type");
+        String detailedUserInfoJwt = createJwt(detailedUserInfoData.get("data"));
+        String detailedUserInfoJwtKey = type + ":" + openId;
+        redisTemplate.opsForValue().set(detailedUserInfoJwtKey, detailedUserInfoJwt, 20, TimeUnit.DAYS);
+        //如果存在之前用户的权限则删除
+        String openidKey = "openid:" + openId;
         if (redisTemplate.hasKey(openidKey)) {
             String oldRefreshToken = redisTemplate.opsForValue().get(openidKey);
             String refreshTokenKey = "refresh_token:" + oldRefreshToken;
@@ -142,16 +157,18 @@ public class WechatRepository {
             }
             redisTemplate.delete(refreshTokenKey);
         }
+        userInfo.setType(type);
+        String simpleUserInfoJwt = createJwt(userInfo);
         //重新设置 openidKey的键值
         redisTemplate.opsForValue().set(openidKey, token.getRefreshToken(), 20, TimeUnit.DAYS);
         //重新设置 refreshTokenKey的键值
         String refreshTokenKey = "refresh_token:" + token.getRefreshToken();
         redisTemplate.opsForHash().put(refreshTokenKey, "access_token", token.getAccessToken());
-        redisTemplate.opsForHash().put(refreshTokenKey, "jwt", jwt);
+        redisTemplate.opsForHash().put(refreshTokenKey, "userInfo", simpleUserInfoJwt);
         redisTemplate.expire(refreshTokenKey, 15, TimeUnit.DAYS);
         //重新设置 accessTokenKey的键值
         String accessTokenKey = "access_token:" + token.getAccessToken();
-        redisTemplate.opsForValue().set(accessTokenKey, jwt, 2, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(accessTokenKey, simpleUserInfoJwt, 2, TimeUnit.HOURS);
     }
 
     /**
@@ -170,6 +187,8 @@ public class WechatRepository {
         return false;
     }
 
+    @Autowired
+    UserRepository userRepository;
     @Autowired
     RestTemplate restTemplate;
     @Autowired

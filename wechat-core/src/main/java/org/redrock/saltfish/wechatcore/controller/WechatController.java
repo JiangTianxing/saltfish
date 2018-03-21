@@ -2,10 +2,10 @@ package org.redrock.saltfish.wechatcore.controller;
 
 import org.redrock.saltfish.common.bean.UserInfo;
 import org.redrock.saltfish.common.component.StringUtil;
+import org.redrock.saltfish.common.interceptor.annotation.Before;
+import org.redrock.saltfish.common.interceptor.impl.UserInfoAuth;
 import org.redrock.saltfish.wechatcore.bean.Token;
 import org.redrock.saltfish.common.exception.RequestException;
-import org.redrock.saltfish.common.interceptor.annotation.Wechat;
-import org.redrock.saltfish.common.interceptor.impl.JwtAuth;
 import org.redrock.saltfish.wechatcore.repository.WechatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,19 +39,17 @@ public class WechatController {
      * @throws RequestException
      */
     @GetMapping("/token/{code}")
-    public ResponseEntity<Map> getTokenWithJwt(@PathVariable("code") Optional<String> code) throws RequestException {
+    public ResponseEntity<Map> getToken(@PathVariable("code") Optional<String> code) throws RequestException {
         if (!code.isPresent()) throw new RequestException(HttpStatus.BAD_REQUEST, "code 参数不可为空");
         Token userToken = wechatRepository.getUserAccessToken(code.get());
         UserInfo userInfo = wechatRepository.getUserInfo(userToken.getOpenid());
-        String jwt = wechatRepository.createJwt(userInfo);
-        wechatRepository.saveJwtAndToken(jwt, userToken);
+        wechatRepository.saveTokenAndUserInfo(userInfo, userToken);
         Map<String, String> tokenWithJwt = new HashMap<>();
         tokenWithJwt.put("access_token", userToken.getAccessToken());
         tokenWithJwt.put("refresh_token", userToken.getRefreshToken());
         tokenWithJwt.put("expire_in", userToken.getExpiresIn() + "");
         return new ResponseEntity<>(tokenWithJwt, HttpStatus.OK);
     }
-
 
     @PatchMapping("/token")
     public ResponseEntity<Map> refreshTokenWithJwt(@RequestHeader("refresh_token") Optional<String> refreshToken) throws RequestException {
@@ -81,7 +79,7 @@ public class WechatController {
         return;
     }
 
-    @Wechat(JwtAuth.class)
+    @Before(UserInfoAuth.class)
     @GetMapping("/jwt")
     public UserInfo jwt(UserInfo userInfo) {
         return userInfo;

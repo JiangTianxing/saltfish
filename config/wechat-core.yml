@@ -9,10 +9,3 @@ spring:
     maxActive: 20
     minIdle: 0
     maxWait: 60000
-word: hello world
-# 微信接入配置
-wechat:
-  appId: "wxdab44034ceb528e8"
-  appSecret: "ef79ebb78a637b1c36c10cd06e811d2c"
-  token: "woshijiangtianxing"
-  index: "http://jiangtianixng.s1.natapp.link/core/auth"

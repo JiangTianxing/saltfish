@@ -13,6 +13,12 @@ services:
       - "15672:15672"
       - "5672:5672"
 
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+
   config-server:
     image: saltfish/config-server
     restart: always

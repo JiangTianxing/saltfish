@@ -9,4 +9,5 @@ public class UserInfo extends CurlError{
     private String headimgurl;
     private String unionid;
     private int sex;
+    private String type;
 }

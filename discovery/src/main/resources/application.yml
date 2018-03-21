@@ -12,12 +12,11 @@ eureka:
     service-url:
       defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@localhost:8761/eureka
   instance:
-    hostname: localhost
-#    hostname: discovery
+    hostname: discovery
   server:
     enable-self-preservation: false
 server:
-  port: 8761
+  port: 8080
 management:
   endpoint:
     health:

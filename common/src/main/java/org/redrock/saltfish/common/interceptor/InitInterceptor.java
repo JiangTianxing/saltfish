@@ -1,7 +1,7 @@
 package org.redrock.saltfish.common.interceptor;
 
 import org.redrock.saltfish.common.exception.RequestException;
-import org.redrock.saltfish.common.interceptor.annotation.Wechat;
+import org.redrock.saltfish.common.interceptor.annotation.Before;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -22,8 +22,8 @@ public class InitInterceptor implements HandlerInterceptor {
                 for (int i = 0; i < methodAnnotations.length; i++) {
                     Annotation annotation = methodAnnotations[i];
                     try {
-                        Wechat wechat = (Wechat) annotation;
-                        Class<? extends BaseInterceptor> interceptor = wechat.value();
+                        Before before = (Before) annotation;
+                        Class<? extends BaseInterceptor> interceptor = before.value();
                         Object object = Class.forName(interceptor.getCanonicalName()).newInstance();
                         Class[] clazzes = new Class[]{HttpServletRequest.class, HttpServletResponse.class, Object.class};
                         Method method = object.getClass().getMethod("interceptor", clazzes);
