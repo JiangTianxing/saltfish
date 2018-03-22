@@ -13,6 +13,13 @@ public class StringUtil {
         return str == null || str.trim().equalsIgnoreCase("");
     }
 
+    public boolean hasBlank(String... strs) {
+        for (String str : strs) {
+            if (str == null || str.trim().equalsIgnoreCase("")) return true;
+        }
+        return false;
+    }
+
     public String getSHA256Str(String str) {
         MessageDigest messageDigest;
         String encodeStr = "";

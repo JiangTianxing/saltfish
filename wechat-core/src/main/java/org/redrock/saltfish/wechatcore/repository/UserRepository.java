@@ -1,11 +1,15 @@
-package org.redrock.saltfish.common.service;
+package org.redrock.saltfish.wechatcore.repository;
 
 import org.redrock.saltfish.common.exception.RequestException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.Map;
 
+@Repository
 public class UserRepository {
 
     public Map<String, String> getDetailedUserInfo(String openId) throws RequestException {
@@ -15,9 +19,7 @@ public class UserRepository {
         throw new RequestException(HttpStatus.BAD_REQUEST, "openid 有误");
     }
 
+    @Autowired
     private RestTemplate restTemplate;
 
-    public UserRepository(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 }

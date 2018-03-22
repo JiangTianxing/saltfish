@@ -3,6 +3,7 @@ package org.redrock.saltfish.wechatdemo.config;
 import org.redrock.saltfish.common.component.JsonToHttpMessageConverter;
 import org.redrock.saltfish.common.component.MyRestTemplate;
 import org.redrock.saltfish.common.interceptor.InitInterceptor;
+import org.redrock.saltfish.common.resolver.DetailedUserInfoResolver;
 import org.redrock.saltfish.common.resolver.UserInfoResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,11 @@ public class BeanLoader {
     @Bean
     UserInfoResolver userInfoResolver() {
         return new UserInfoResolver();
+    }
+
+    @Bean
+    DetailedUserInfoResolver detailedUserInfoResolver() {
+        return new DetailedUserInfoResolver();
     }
 
     /**

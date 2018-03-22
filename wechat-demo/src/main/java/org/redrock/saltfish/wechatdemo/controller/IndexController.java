@@ -1,7 +1,9 @@
 package org.redrock.saltfish.wechatdemo.controller;
 
+import org.redrock.saltfish.common.bean.DetailedUserInfo;
 import org.redrock.saltfish.common.bean.UserInfo;
 import org.redrock.saltfish.common.interceptor.annotation.Before;
+import org.redrock.saltfish.common.interceptor.impl.DetailedUserInfoAuth;
 import org.redrock.saltfish.common.interceptor.impl.UserInfoAuth;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
@@ -29,5 +31,12 @@ public class IndexController {
     @GetMapping("/userinfo")
     public UserInfo userInfo(UserInfo userInfo) {
         return userInfo;
+    }
+
+
+    @Before(DetailedUserInfoAuth.class)
+    @GetMapping("/detailed")
+    public String detailed(DetailedUserInfo userInfo) {
+        return userInfo.getDetailedUserInfo();
     }
 }

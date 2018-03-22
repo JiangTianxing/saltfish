@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public class AccessTokenTask {
     @Scheduled(fixedRate = 1000 * 60 * 60)
     public void refreshAccessToken() {
         String url = String.format(AccessTokenApi, appId, appSecret);
-        Map<String, String> data = restTemplate.getForObject(url, HashMap.class);
+        Map<String, String> data = outRestTemplate.getForObject(url, HashMap.class);
         if (!stringUtil.isBlank(data.get("access_token"))) {
             String accessToken = data.get("access_token");
             if (stringUtil.isBlank(wechatRepository.getAccessToken())) {
@@ -57,8 +59,8 @@ public class AccessTokenTask {
     @Value("${wechat.token}")
     private String token;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    @Resource(name = "outRestTemplate")
+    private RestTemplate outRestTemplate;
     @Autowired
     private StringUtil stringUtil;
     @Autowired

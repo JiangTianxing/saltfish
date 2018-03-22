@@ -1,0 +1,17 @@
+org/redrock/saltfish/common/interceptor/InitInterceptor.class
+org/redrock/saltfish/common/component/JsonToHttpMessageConverter.class
+org/redrock/saltfish/common/interceptor/annotation/Before.class
+org/redrock/saltfish/common/resolver/DetailedUserInfoResolver.class
+org/redrock/saltfish/common/resolver/UserInfoResolver.class
+org/redrock/saltfish/common/bean/DetailedUserInfo.class
+org/redrock/saltfish/common/interceptor/impl/DetailedUserInfoAuth.class
+org/redrock/saltfish/common/interceptor/BaseInterceptor.class
+org/redrock/saltfish/common/bean/UserInfo.class
+org/redrock/saltfish/common/component/MyRestTemplate$JsonToHttpMessageConverter.class
+org/redrock/saltfish/common/interceptor/impl/UserInfoAuth.class
+org/redrock/saltfish/common/exception/RequestException.class
+org/redrock/saltfish/common/component/MyRestTemplate.class
+org/redrock/saltfish/common/bean/CurlError.class
+org/redrock/saltfish/common/component/TimeUtil.class
+org/redrock/saltfish/common/component/StringUtil.class
+org/redrock/saltfish/common/resolver/RequestExceptionResolver.class

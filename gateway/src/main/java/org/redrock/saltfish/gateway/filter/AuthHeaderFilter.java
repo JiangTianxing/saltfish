@@ -4,6 +4,7 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import org.redrock.saltfish.gateway.component.StringUtil;
+import org.redrock.saltfish.gateway.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ public class AuthHeaderFilter extends ZuulFilter {
     RedisTemplate<String, String> redisTemplate;
     @Autowired
     StringUtil stringUtil;
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public String filterType() {
@@ -47,30 +50,13 @@ public class AuthHeaderFilter extends ZuulFilter {
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
-//        String[] authItems = request.getHeader("Authorization").split(" ");
-
-        //        String accessToken = authentication.substring(authentication.indexOf(" ") + 1);
-//        String accessTokenKey = "access_token:" + accessToken;
-//        String userinfo;
-//        if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(userinfo = redisTemplate.opsForValue().get(accessTokenKey))) {
-//            response.setCharacterEncoding("UTF-8");
-//            String msg = "{\"errmsg\":\"access_token 无效\"}";
-//            context.setSendZuulResponse(false);
-//            context.setResponseStatusCode(HttpStatus.NOT_FOUND.value());
-//            context.setResponseBody(msg);
-//            return null;
-//        }
-//        context.addZuulRequestHeader("Authorization", "userInfo " + userinfo);
-////        if (stringUtil.isBlank(request.getHeader("detailed")))
-//        String expect = request.getref
-//        return null;
         String[] items = request.getHeader("Authorization").split(" ");
         if (items != null && items.length == 2) {
             String type = items[0];
             String accessToken = items[1];
             String accessTokenKey = "access_token:" + accessToken;
-            String userinfo;
-            if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(userinfo = redisTemplate.opsForValue().get(accessTokenKey))) {
+            String userInfoJwt;
+            if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(userInfoJwt = redisTemplate.opsForValue().get(accessToken))) {
                 response.setCharacterEncoding("UTF-8");
                 String msg = "{\"errmsg\":\"access_token 无效\"}";
                 context.setSendZuulResponse(false);
@@ -78,8 +64,13 @@ public class AuthHeaderFilter extends ZuulFilter {
                 context.setResponseBody(msg);
                 return null;
             }
-//        context.addZuulRequestHeader("Authorization", "userInfo " + userinfo);
-//            DispatcherServlet dispatcherServlet = new DispatcherServlet();
+            if (type.equals("Detailed")) {
+                String openId = userRepository.getOpenIdFromUserInfoJwt(userInfoJwt);
+                String openIdKey = "openId:" + openId;
+                String detailedUserInfo = (String) redisTemplate.opsForHash().get(openIdKey, "detailed_user_info");
+                context.addZuulRequestHeader("detailed", detailedUserInfo);
+            }
+            context.addZuulRequestHeader("Authorization", "userInfo " + userInfoJwt);
         }
         return null;
     }

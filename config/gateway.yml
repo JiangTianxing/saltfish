@@ -1,9 +1,4 @@
 # api 服务网关路由配置
-#zuul:
-#  routes:
-#    wechat:
-#      path: /wechat/**
-#      serviceId: wechat-core
 zuul:
   routes:
     wechat:
@@ -28,4 +23,4 @@ hystrix:
             timeoutInMilliseconds: 60000
 ribbon:
   ReadTimeout: 60000
-  ConnectTimeout: 60000 
+  ConnectTimeout: 60000

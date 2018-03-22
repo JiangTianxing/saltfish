@@ -7,9 +7,8 @@ spring:
         enabled: true
         service-id: config-server
 server:
-  port: 8081
+  port: 8080
 eureka:
   client:
     service-url:
-#      defaultZone: http://discovery:8080/eureka
-      defaultZone: http://jiangtianxing:jiangtianxing@localhost:8761/eureka
+      defaultZone: http://jiangtianxing:jiangtianxing@discovery:8080/eureka

@@ -1,7 +1,6 @@
 package org.redrock.saltfish.wechatcore.config;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.redrock.saltfish.common.service.UserRepository;
 import org.redrock.saltfish.wechatcore.component.JsonToHttpMessageConverter;
 import org.redrock.saltfish.common.component.StringUtil;
 import org.redrock.saltfish.common.component.TimeUtil;
@@ -28,14 +27,11 @@ public class BeanLoader {
         return restTemplate;
     }
 
-    /**
-     * 注册user服务
-     * @param restTemplate
-     * @return
-     */
-    @Bean
-    UserRepository userRepository(@Autowired RestTemplate restTemplate) {
-        return new UserRepository(restTemplate);
+    @Bean(name = "outRestTemplate")
+    RestTemplate outRestTemplate(@Autowired JsonToHttpMessageConverter messageConverter) {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(messageConverter);
+        return restTemplate;
     }
 
     /**
