@@ -13,7 +13,7 @@ spring:
         min-idle: 0
 # rabbitmq消息中间件配置
   rabbitmq:
-    host: rabbitmp
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
