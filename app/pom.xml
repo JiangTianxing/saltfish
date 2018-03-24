@@ -17,6 +17,7 @@
 
     <modules>
         <module>../user-center</module>
+        <module>../wechat-core</module>
     </modules>
 
     <dependencies>
@@ -58,6 +59,15 @@
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>5.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
