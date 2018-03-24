@@ -1,6 +1,6 @@
 spring:
   application:
-    name: wechat-demo
+    name: zipkin
   cloud:
     config:
       discovery:
@@ -11,4 +11,4 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://jiangtianxing:jiangtianxing@localhost:8761/eureka
+      defaultZone: http://jiangtianxing:jiangtianxing@discovery:8761/eureka

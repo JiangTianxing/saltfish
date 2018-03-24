@@ -68,3 +68,11 @@ services:
         - discovery
         - config-server
         - rabbitmq
+
+  zipkin:
+    image: saltfish/zipkin
+    restart: always
+    ports:
+      - "9411:8080"
+    links:
+      - discovery
