@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/config-server/config-server.iml" filepath="$PROJECT_DIR$/config-server/config-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/discovery/discovery.iml" filepath="$PROJECT_DIR$/discovery/discovery.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gateway/gateway.iml" filepath="$PROJECT_DIR$/gateway/gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test.iml" filepath="$PROJECT_DIR$/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user-center/user-center.iml" filepath="$PROJECT_DIR$/user-center/user-center.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wechat-core/wechat-core.iml" filepath="$PROJECT_DIR$/wechat-core/wechat-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wechat-demo/wechat-demo.iml" filepath="$PROJECT_DIR$/wechat-demo/wechat-demo.iml" />
+    </modules>
+  </component>
+</project>

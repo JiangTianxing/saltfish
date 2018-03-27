@@ -19,6 +19,9 @@ spring:
     password: guest
   zipkin:
     base-url: http://zipkin:8080
+  sleuth:
+    sampler:
+      percentage: 1
 # 为每个微服务暴露 bus-refresh、refresh 两个api接口，方便部分配置信息的动态刷新
 management:
   endpoints:
