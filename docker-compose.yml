@@ -80,8 +80,8 @@ services:
         - config-server
         - rabbitmq
 
-  zipkin:
-    image: saltfish/zipkin
+  zipkin-server:
+    image: saltfish/zipkin-server
     restart: always
     ports:
       - "9411:8080"
