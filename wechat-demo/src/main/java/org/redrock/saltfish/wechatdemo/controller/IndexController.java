@@ -6,6 +6,9 @@ import org.redrock.saltfish.common.interceptor.annotation.Before;
 import org.redrock.saltfish.common.interceptor.impl.DetailedUserInfoAuth;
 import org.redrock.saltfish.common.interceptor.impl.UserInfoAuth;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.PrintWriter;
 import java.util.Map;
 
 @RestController
@@ -36,7 +39,7 @@ public class IndexController {
 
     @Before(DetailedUserInfoAuth.class)
     @GetMapping("/detailed")
-    public String detailed(DetailedUserInfo userInfo) {
-        return userInfo.getDetailedUserInfo();
+    public DetailedUserInfo detailed(DetailedUserInfo detailedUserInfo) {
+        return detailedUserInfo;
     }
 }

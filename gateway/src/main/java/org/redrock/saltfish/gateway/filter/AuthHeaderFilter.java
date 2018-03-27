@@ -13,9 +13,12 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.logging.Logger;
 
 @Component
 public class AuthHeaderFilter extends ZuulFilter {
+
+    private Logger logger = Logger.getLogger(getClass().getName());
 
     @Autowired
     RedisTemplate<String, String> redisTemplate;
@@ -56,7 +59,8 @@ public class AuthHeaderFilter extends ZuulFilter {
             String accessToken = items[1];
             String accessTokenKey = "access_token:" + accessToken;
             String userInfoJwt;
-            if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(userInfoJwt = redisTemplate.opsForValue().get(accessToken))) {
+            if (!redisTemplate.hasKey(accessTokenKey) || stringUtil.isBlank(userInfoJwt = redisTemplate.opsForValue().get(accessTokenKey))) {
+                logger.info("<=====> accessToken 不存在: " + accessTokenKey);
                 response.setCharacterEncoding("UTF-8");
                 String msg = "{\"errmsg\":\"access_token 无效\"}";
                 context.setSendZuulResponse(false);
@@ -67,10 +71,11 @@ public class AuthHeaderFilter extends ZuulFilter {
             if (type.equals("Detailed")) {
                 String openId = userRepository.getOpenIdFromUserInfoJwt(userInfoJwt);
                 String openIdKey = "openId:" + openId;
-                String detailedUserInfo = (String) redisTemplate.opsForHash().get(openIdKey, "detailed_user_info");
-                context.addZuulRequestHeader("detailed", detailedUserInfo);
+                String detailedUserInfoJwt = (String) redisTemplate.opsForHash().get(openIdKey, "detailed_user_info");
+                context.addZuulRequestHeader("detailed", detailedUserInfoJwt);
             }
-            context.addZuulRequestHeader("Authorization", "userInfo " + userInfoJwt);
+//            context.addZuulRequestHeader("Authorization", "userInfo " + userInfoJwt);
+            context.addZuulRequestHeader("userInfo", userInfoJwt);
         }
         return null;
     }

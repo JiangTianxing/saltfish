@@ -59,6 +59,17 @@ services:
       - mysql
       - user-center
 
+  wechat-demo:
+    image: saltfish/wechat-demo
+    restart: always
+    ports:
+      - "8083:8080"
+    links:
+          - discovery
+          - config-server
+          - rabbitmq
+          - mysql
+
   gateway:
       image: saltfish/gateway
       restart: always

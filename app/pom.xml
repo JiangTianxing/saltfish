@@ -18,6 +18,7 @@
     <modules>
         <module>../user-center</module>
         <module>../wechat-core</module>
+        <module>../wechat-demo</module>
     </modules>
 
     <dependencies>

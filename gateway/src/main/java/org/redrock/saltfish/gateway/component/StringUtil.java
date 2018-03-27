@@ -10,6 +10,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import sun.misc.BASE64Decoder;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -83,6 +85,17 @@ public class StringUtil {
             e.printStackTrace();
         }
         System.out.println(result);
+        return result;
+    }
+
+    public String base64Decode(String base64Str) {
+        String result = null;
+        try {
+            BASE64Decoder base64Decoder = new BASE64Decoder();
+            result = new String(base64Decoder.decodeBuffer(base64Str), "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 }

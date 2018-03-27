@@ -1,7 +1,9 @@
 package org.redrock.saltfish.wechatdemo.config;
 
+import org.redrock.saltfish.common.bean.DetailedUserInfo;
 import org.redrock.saltfish.common.component.JsonToHttpMessageConverter;
 import org.redrock.saltfish.common.interceptor.InitInterceptor;
+import org.redrock.saltfish.common.resolver.DetailedUserInfoResolver;
 import org.redrock.saltfish.common.resolver.UserInfoResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,8 @@ public class WebConfig implements WebMvcConfigurer{
 
     @Autowired
     UserInfoResolver userInfoResolver;
+    @Autowired
+    DetailedUserInfoResolver detailedUserInfoResolver;
 
     @Autowired
     JsonToHttpMessageConverter jsonToHttpMessageConverter;
@@ -38,5 +42,6 @@ public class WebConfig implements WebMvcConfigurer{
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userInfoResolver);
+        resolvers.add(detailedUserInfoResolver);
     }
 }
