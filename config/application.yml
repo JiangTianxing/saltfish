@@ -1,8 +1,51 @@
+#spring:
+## 缓存配置
+#  redis:
+#    database: 0
+#    host: redis
+#    password:
+#    port: 6379
+#    jedis:
+#      pool:
+#        max-active: 8
+#        max-wait: -1
+#        max-idle: 8
+#        min-idle: 0
+## rabbitmq消息中间件配置
+#  rabbitmq:
+#    host: rabbitmq
+#    port: 5672
+#    username: guest
+#    password: guest
+#  zipkin:
+#    base-url: http://zipkin:8080
+#  sleuth:
+#    sampler:
+#      percentage: 1
+## 为每个微服务暴露 bus-refresh、refresh 两个api接口，方便部分配置信息的动态刷新
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: bus-refresh,refresh
+## 微服务内部调用权限 jwt 的加密私钥
+#core:
+#  secret: "redrockstaff"
+#wechat:
+#  appId: "wxdab44034ceb528e8"
+#  appSecret: "ef79ebb78a637b1c36c10cd06e811d2c"
+#  token: "woshijiangtianxing"
+#  index: "http://jiangtianixng.s1.natapp.link/core/auth"
+## 指定微信消息转发的可识别路径后缀
+#  msg:
+#      path-suffix: wechat-message
+
+
 spring:
 # 缓存配置
   redis:
     database: 0
-    host: redis
+    host: localhost
     password:
     port: 6379
     jedis:
@@ -13,15 +56,15 @@ spring:
         min-idle: 0
 # rabbitmq消息中间件配置
   rabbitmq:
-    host: rabbitmq
+    host: localhost
     port: 5672
     username: guest
     password: guest
   zipkin:
-    base-url: http://zipkin:8080
+    base-url: http://localhost:9411
   sleuth:
     sampler:
-      percentage: 1
+      percentage: 1.0
 # 为每个微服务暴露 bus-refresh、refresh 两个api接口，方便部分配置信息的动态刷新
 management:
   endpoints:
